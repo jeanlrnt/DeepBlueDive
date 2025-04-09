@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+
+:root {
+    --primary: #006994;
+    --secondary: #00A0C6;
+    --accent: #FF9F1C;
+    --dark: #022B3A;
+    --light: #E1F5FE;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f0f9ff;
+}
+
+h1,
+h2,
+h3,
+h4,
+.nav-item {
+    font-family: 'Barlow Condensed', sans-serif;
+}
+
+.wave-bg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="%23006994" opacity=".25"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" fill="%23006994" opacity=".5"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,236.83-84.81V0Z" fill="%23006994"/></svg>');
+    background-size: cover;
+    z-index: -1;
+}
+
+.dive-card {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 105, 148, 0.1);
+}
+
+.dive-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 105, 148, 0.2);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.5s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+.checklist-item.checked {
+    background-color: #f0fdf4;
+    border-left: 4px solid #10b981;
+}
+
+.depth-gauge {
+    background: linear-gradient(to bottom, #0077be, #00a0c6, #00c2d6);
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Drag and drop styling */
+.checklist-item.dragging {
+    opacity: 0.5;
+    background-color: #f0f9ff;
+}
+
+.checklist-item.over {
+    border-top: 2px solid #3b82f6;
+}
+
+/* Animation for checklist items */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.checklist-item {
+    animation: slideIn 0.3s ease forwards;
+}
+
+/* Pulse animation for save button */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 0.5s ease;
+}
+
+/* Dive planner specific */
+.dive-plan-card {
+    border-left: 4px solid var(--primary);
+}
+
+/* Map container */
+#diveMap {
+    height: 300px;
+    border-radius: 0.75rem;
+    z-index: 0;
+}
+
+/* Analysis chart container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Logbook entry */
+.log-entry {
+    border-left: 4px solid var(--secondary);
+    transition: all 0.3s ease;
+}
+
+.log-entry:hover {
+    transform: translateX(5px);
+}
+
+/* Tool card */
+.tool-card {
+    transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+    transform: scale(1.03);
+}
+
+/* No deco time gauge */
+.no-deco-gauge {
+    background: conic-gradient(#10b981 0% 100%, #e5e7eb 100% 100%);
+}
+
+/* Nitrox calculator */
+.nitrox-calculator {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+}
+
+/* Safety stop timer */
+.safety-stop {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
