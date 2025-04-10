@@ -527,47 +527,150 @@
 
                         <!-- Logbook Filters -->
                         <div class="bg-blue-50 rounded-lg p-4 mb-6">
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Date Range Filter -->
                                 <div>
                                     <label class="block text-sm font-medium text-blue-700 mb-1">Date Range</label>
                                     <select id="logbookDateRange"
                                         class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
                                         <option value="all">All Dives</option>
-                                        <option value="month">Last Month</option>
+                                        <option value="today">Today</option>
+                                        <option value="yesterday">Yesterday</option>
+                                        <option value="week">Last 7 Days</option>
+                                        <option value="twoweeks">Last 14 Days</option>
+                                        <option value="month">Last 30 Days</option>
                                         <option value="3months">Last 3 Months</option>
+                                        <option value="6months">Last 6 Months</option>
                                         <option value="year">Last Year</option>
                                         <option value="custom">Custom Range</option>
                                     </select>
                                 </div>
 
-                                <div id="customDateRange" class="md:col-span-2 hidden">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-blue-700 mb-1">From</label>
-                                            <input type="date" id="logbookDateFrom"
-                                                class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-blue-700 mb-1">To</label>
-                                            <input type="date" id="logbookDateTo"
-                                                class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                        </div>
+                                <!-- Year/Month Filter -->
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-1">Year/Month</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <select id="logbookYearFilter"
+                                            class="border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                            <option value="all">All Years</option>
+                                        </select>
+                                        <select id="logbookMonthFilter"
+                                            class="border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                            <option value="all">All Months</option>
+                                            <option value="1">January</option>
+                                            <option value="2">February</option>
+                                            <option value="3">March</option>
+                                            <option value="4">April</option>
+                                            <option value="5">May</option>
+                                            <option value="6">June</option>
+                                            <option value="7">July</option>
+                                            <option value="8">August</option>
+                                            <option value="9">September</option>
+                                            <option value="10">October</option>
+                                            <option value="11">November</option>
+                                            <option value="12">December</option>
+                                        </select>
                                     </div>
                                 </div>
 
+                                <!-- Dive Site Filter -->
                                 <div>
                                     <label class="block text-sm font-medium text-blue-700 mb-1">Dive Site</label>
                                     <select id="logbookSiteFilter"
                                         class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
                                         <option value="all">All Sites</option>
-                                        <option value="blue_hole">Blue Hole</option>
-                                        <option value="coral_garden">Coral Garden</option>
-                                        <option value="wreck_alley">Wreck Alley</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Custom Date Range -->
+                            <div id="customDateRange" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-1">From Date</label>
+                                    <input type="date" id="logbookDateFrom"
+                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-1">To Date</label>
+                                    <input type="date" id="logbookDateTo"
+                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                </div>
+                            </div>
+
+                            <!-- Additional Filters -->
+                            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Depth Range -->
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-1">Depth Range (m)</label>
+                                    <div class="range-slider-container">
+                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                            <span id="depthValue">0m - 60m</span>
+                                        </div>
+                                        <div class="multi-range">
+                                            <input type="range" 
+                                                id="logbookDepthMin" 
+                                                class="multi-range-slider overlap" 
+                                                min="0" 
+                                                max="60" 
+                                                step="1" 
+                                                value="0">
+                                            <input type="range" 
+                                                id="logbookDepthMax" 
+                                                class="multi-range-slider ghost" 
+                                                min="0" 
+                                                max="60" 
+                                                step="1" 
+                                                value="60">
+                                            <div class="range-track"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Duration Range -->
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-1">Duration Range (min)</label>
+                                    <div class="range-slider-container">
+                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                            <span id="durationValue">0min - 180min</span>
+                                        </div>
+                                        <div class="multi-range">
+                                            <input type="range" 
+                                                id="logbookDurationMin" 
+                                                class="multi-range-slider overlap" 
+                                                min="0" 
+                                                max="180" 
+                                                step="5" 
+                                                value="0">
+                                            <input type="range" 
+                                                id="logbookDurationMax" 
+                                                class="multi-range-slider ghost" 
+                                                min="0" 
+                                                max="180" 
+                                                step="5" 
+                                                value="180">
+                                            <div class="range-track"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Gas Mix Filter -->
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-700 mb-1">Gas Mix</label>
+                                    <select id="logbookGasMixFilter"
+                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                        <option value="all">All Gas Mixes</option>
+                                        <option value="air">Air</option>
+                                        <option value="nitrox32">Nitrox 32</option>
+                                        <option value="nitrox36">Nitrox 36</option>
+                                        <option value="custom">Custom Mix</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="flex justify-end mt-4">
+                                <button id="resetFiltersBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium mr-2">
+                                    Reset Filters
+                                </button>
                                 <button id="applyFiltersBtn"
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
                                     Apply Filters
@@ -1193,6 +1296,61 @@
                     class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium">
                     Delete Plan
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Logbook Entry Modal -->
+    <div id="newLogEntryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-blue-900">Add New Logbook Entry</h3>
+                <button onclick="closeModal('newLogEntryModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dive Site*</label>
+                    <input type="text" id="logEntrySite" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date*</label>
+                    <input type="date" id="logEntryDate" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Depth (m)*</label>
+                    <input type="number" id="logEntryDepth" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Duration (min)*</label>
+                    <input type="number" id="logEntryDuration" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Water Temp (°C)</label>
+                    <input type="number" id="logEntryTemp" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Gas Mix</label>
+                    <select id="logEntryGasMix" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="air">Air</option>
+                        <option value="nitrox32">Nitrox 32</option>
+                        <option value="nitrox36">Nitrox 36</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Conditions</label>
+                <input type="text" id="logEntryConditions" placeholder="Visibility, current, etc." class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea id="logEntryNotes" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeModal('newLogEntryModal')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">Cancel</button>
+                <button id="saveLogEntryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">Save Entry</button>
             </div>
         </div>
     </div>

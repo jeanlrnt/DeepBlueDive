@@ -45,6 +45,129 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize drag and drop
     setupDragAndDrop();
+
+    // Initialize logbook
+    initializeLogbook();
+
+    document.getElementById('newLogEntryBtn').addEventListener('click', function () {
+        // Reset form fields
+        document.getElementById('logEntrySite').value = '';
+        document.getElementById('logEntryDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('logEntryDepth').value = '';
+        document.getElementById('logEntryDuration').value = '';
+        document.getElementById('logEntryTemp').value = '';
+        document.getElementById('logEntryGasMix').value = 'air';
+        document.getElementById('logEntryConditions').value = '';
+        document.getElementById('logEntryNotes').value = '';
+
+        // Reset save button state
+        const saveBtn = document.getElementById('saveLogEntryBtn');
+        saveBtn.textContent = 'Save Entry';
+        delete saveBtn.dataset.updateIndex;
+
+        // Show the modal
+        document.getElementById('newLogEntryModal').classList.remove('hidden');
+    });
+
+    document.getElementById('applyFiltersBtn').addEventListener('click', function () {
+        currentPage = 1;
+        renderLogbookEntries();
+    });
+
+    document.getElementById('prevPageBtn').addEventListener('click', goToPrevPage);
+    document.getElementById('nextPageBtn').addEventListener('click', goToNextPage);
+
+    document.getElementById('exportLogbookBtn').addEventListener('click', function () {
+        const dataStr = JSON.stringify(logbookEntries, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'logbook.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // Add event listener for saving new logbook entry
+    document.getElementById('saveLogEntryBtn').addEventListener('click', function () {
+        // Get the form values
+        const entryData = {
+            site: document.getElementById('logEntrySite').value,
+            date: document.getElementById('logEntryDate').value,
+            depth: parseFloat(document.getElementById('logEntryDepth').value),
+            duration: parseFloat(document.getElementById('logEntryDuration').value),
+            temperature: parseFloat(document.getElementById('logEntryTemp').value) || null,
+            gasMix: document.getElementById('logEntryGasMix').value,
+            conditions: document.getElementById('logEntryConditions').value,
+            notes: document.getElementById('logEntryNotes').value
+        };
+
+        // Check if we're updating an existing entry
+        const updateIndex = this.dataset.updateIndex;
+        
+        if (updateIndex !== undefined) {
+            // Update existing entry
+            logbookEntries[updateIndex] = {
+                ...logbookEntries[updateIndex],
+                ...entryData,
+                timestamp: new Date().getTime() // Update timestamp
+            };
+            // Reset the update index
+            delete this.dataset.updateIndex;
+            this.textContent = 'Save Entry';
+        } else {
+            // Add new entry
+            addLogbookEntry(entryData);
+        }
+
+        saveLogbookEntries();
+        renderLogbookEntries();
+        closeModal('newLogEntryModal');
+    });
+
+    // Logbook filter event listeners
+    document.getElementById('logbookDateRange').addEventListener('change', function() {
+        const customDateRange = document.getElementById('customDateRange');
+        if (this.value === 'custom') {
+            customDateRange.classList.remove('hidden');
+        } else {
+            customDateRange.classList.add('hidden');
+        }
+    });
+
+    document.getElementById('resetFiltersBtn').addEventListener('click', function() {
+        // Reset all filters to default values
+        document.getElementById('logbookDateRange').value = 'all';
+        document.getElementById('logbookYearFilter').value = 'all';
+        document.getElementById('logbookMonthFilter').value = 'all';
+        document.getElementById('logbookSiteFilter').value = 'all';
+        document.getElementById('logbookDepthMin').value = '';
+        document.getElementById('logbookDepthMax').value = '';
+        document.getElementById('logbookDurationMin').value = '';
+        document.getElementById('logbookDurationMax').value = '';
+        document.getElementById('logbookGasMixFilter').value = 'all';
+        document.getElementById('customDateRange').classList.add('hidden');
+        document.getElementById('logbookDateFrom').value = '';
+        document.getElementById('logbookDateTo').value = '';
+        
+        // Reset to first page and render
+        currentPage = 1;
+        renderLogbookEntries();
+    });
+
+    // Initialize range slider fills
+    const depthMin = document.getElementById('logbookDepthMin');
+    const depthMax = document.getElementById('logbookDepthMax');
+    const durationMin = document.getElementById('logbookDurationMin');
+    const durationMax = document.getElementById('logbookDurationMax');
+    
+    // Initialize depth range fill
+    updateRangeSliderFill(depthMin, depthMax, true);
+    updateRangeSliderFill(depthMax, depthMin, false);
+    
+    // Initialize duration range fill
+    updateRangeSliderFill(durationMin, durationMax, true);
+    updateRangeSliderFill(durationMax, durationMin, false);
 });
 
 // Checklist data structure
@@ -1296,6 +1419,22 @@ function getGasMixLabel(gasMix, o2Percentage) {
     return gasMix;
 }
 
+// Helper function to get gas mix label
+function getGasMixLabel(mix) {
+    switch (mix) {
+        case 'air':
+            return 'Air';
+        case 'nitrox32':
+            return 'Nitrox 32';
+        case 'nitrox36':
+            return 'Nitrox 36';
+        case 'custom':
+            return 'Custom Mix';
+        default:
+            return mix;
+    }
+}
+
 // Nitrox calculator
 function calculateNitrox() {
     const o2Percentage = parseFloat(document.getElementById('nitroxO2').value) || 21;
@@ -1493,3 +1632,408 @@ function setupSafetyStopTimer() {
     // Initial display
     updateDisplay();
 }
+
+// Logbook functionality
+let logbookEntries = [];
+let currentPage = 1;
+const entriesPerPage = 10;
+
+// Initialize logbook with sample data if empty
+function initializeLogbook() {
+    const savedEntries = localStorage.getItem('logbookEntries');
+    if (savedEntries) {
+        logbookEntries = JSON.parse(savedEntries);
+    } else {
+        // Add some sample entries
+        logbookEntries = [
+            {
+                site: "Blue Lagoon",
+                date: "2025-04-09",
+                depth: 18,
+                duration: 45,
+                temperature: 24,
+                gasMix: "air",
+                conditions: "Excellent visibility, light current",
+                notes: "Saw several sea turtles and a reef shark",
+                timestamp: new Date().getTime()
+            },
+            {
+                site: "Coral Garden",
+                date: "2025-04-08",
+                depth: 22,
+                duration: 50,
+                temperature: 23,
+                gasMix: "nitrox32",
+                conditions: "Moderate visibility, no current",
+                notes: "Beautiful coral formations",
+                timestamp: new Date().getTime() - 86400000
+            }
+        ];
+        saveLogbookEntries();
+    }
+    renderLogbookEntries();
+}
+
+// Render logbook entries
+function renderLogbookEntries() {
+    const logbookContainer = document.getElementById('logbookEntries');
+    logbookContainer.innerHTML = '';
+
+    // Apply filters
+    let filteredEntries = [...logbookEntries];
+
+    // Date range filter
+    const dateRange = document.getElementById('logbookDateRange').value;
+    if (dateRange !== 'all') {
+        const now = new Date();
+        let fromDate = new Date();
+
+        switch (dateRange) {
+            case 'today':
+                fromDate.setHours(0, 0, 0, 0);
+                break;
+            case 'yesterday':
+                fromDate.setDate(now.getDate() - 1);
+                fromDate.setHours(0, 0, 0, 0);
+                break;
+            case 'week':
+                fromDate.setDate(now.getDate() - 7);
+                break;
+            case 'twoweeks':
+                fromDate.setDate(now.getDate() - 14);
+                break;
+            case 'month':
+                fromDate.setMonth(now.getMonth() - 1);
+                break;
+            case '3months':
+                fromDate.setMonth(now.getMonth() - 3);
+                break;
+            case '6months':
+                fromDate.setMonth(now.getMonth() - 6);
+                break;
+            case 'year':
+                fromDate.setFullYear(now.getFullYear() - 1);
+                break;
+            case 'custom':
+                const customFrom = document.getElementById('logbookDateFrom').value;
+                const customTo = document.getElementById('logbookDateTo').value;
+                if (customFrom && customTo) {
+                    filteredEntries = filteredEntries.filter(entry => 
+                        entry.date >= customFrom && entry.date <= customTo
+                    );
+                }
+                break;
+        }
+        if (dateRange !== 'custom') {
+            filteredEntries = filteredEntries.filter(entry => 
+                new Date(entry.date) >= fromDate
+            );
+        }
+    }
+
+    // Year/Month filter
+    const yearFilter = document.getElementById('logbookYearFilter').value;
+    const monthFilter = document.getElementById('logbookMonthFilter').value;
+    
+    if (yearFilter !== 'all') {
+        filteredEntries = filteredEntries.filter(entry => 
+            new Date(entry.date).getFullYear().toString() === yearFilter
+        );
+    }
+    
+    if (monthFilter !== 'all') {
+        filteredEntries = filteredEntries.filter(entry => 
+            (new Date(entry.date).getMonth() + 1).toString() === monthFilter
+        );
+    }
+
+    // Site filter
+    const siteFilter = document.getElementById('logbookSiteFilter').value.toLowerCase();
+    if (siteFilter !== 'all') {
+        filteredEntries = filteredEntries.filter(entry => 
+            entry.site.toLowerCase().includes(siteFilter)
+        );
+    }
+
+    // Depth range filter
+    const depthMin = parseFloat(document.getElementById('logbookDepthMin').value);
+    const depthMax = parseFloat(document.getElementById('logbookDepthMax').value);
+    if (!isNaN(depthMin)) {
+        filteredEntries = filteredEntries.filter(entry => entry.depth >= depthMin);
+    }
+    if (!isNaN(depthMax)) {
+        filteredEntries = filteredEntries.filter(entry => entry.depth <= depthMax);
+    }
+
+    // Duration range filter
+    const durationMin = parseFloat(document.getElementById('logbookDurationMin').value);
+    const durationMax = parseFloat(document.getElementById('logbookDurationMax').value);
+    if (!isNaN(durationMin)) {
+        filteredEntries = filteredEntries.filter(entry => entry.duration >= durationMin);
+    }
+    if (!isNaN(durationMax)) {
+        filteredEntries = filteredEntries.filter(entry => entry.duration <= durationMax);
+    }
+
+    // Gas mix filter
+    const gasMixFilter = document.getElementById('logbookGasMixFilter').value;
+    if (gasMixFilter !== 'all') {
+        filteredEntries = filteredEntries.filter(entry => entry.gasMix === gasMixFilter);
+    }
+
+    // Sort by date (newest first)
+    filteredEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Pagination
+    const startIndex = (currentPage - 1) * entriesPerPage;
+    const endIndex = startIndex + entriesPerPage;
+    const paginatedEntries = filteredEntries.slice(startIndex, endIndex);
+
+    // Update pagination info
+    document.getElementById('entriesShown').textContent = 
+        `${startIndex + 1}-${Math.min(endIndex, filteredEntries.length)}`;
+    document.getElementById('totalEntries').textContent = filteredEntries.length;
+
+    // Enable/disable pagination buttons
+    document.getElementById('prevPageBtn').disabled = currentPage === 1;
+    document.getElementById('nextPageBtn').disabled = endIndex >= filteredEntries.length;
+
+    // Populate site filter dropdown with unique sites
+    const siteSelect = document.getElementById('logbookSiteFilter');
+    if (siteSelect.options.length <= 1) {
+        const uniqueSites = [...new Set(logbookEntries.map(entry => entry.site))].sort();
+        uniqueSites.forEach(site => {
+            const option = document.createElement('option');
+            option.value = site;
+            option.textContent = site;
+            siteSelect.appendChild(option);
+        });
+    }
+
+    // Populate year filter with unique years
+    const yearSelect = document.getElementById('logbookYearFilter');
+    if (yearSelect.options.length <= 1) {
+        const uniqueYears = [...new Set(logbookEntries.map(entry => 
+            new Date(entry.date).getFullYear()
+        ))].sort().reverse();
+        uniqueYears.forEach(year => {
+            const option = document.createElement('option');
+            option.value = year.toString();
+            option.textContent = year.toString();
+            yearSelect.appendChild(option);
+        });
+    }
+
+    // Render entries
+    if (paginatedEntries.length === 0) {
+        logbookContainer.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-book text-4xl mb-2"></i>
+                <p>No dive logs found</p>
+                <p class="text-sm mt-2">Click the "+ New Entry" button to add your first dive log</p>
+            </div>
+        `;
+        return;
+    }
+
+    paginatedEntries.forEach((entry, index) => {
+        const entryElement = document.createElement('div');
+        entryElement.className = 'log-entry bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-300 mb-4';
+        
+        entryElement.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-xl font-bold text-blue-900">${entry.site}</h4>
+                    <p class="text-sm text-gray-500">${formatDate(entry.date)}</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="editLogbookEntry(${JSON.stringify(entry)}, ${startIndex + index})" 
+                            class="bg-blue-100 hover:bg-blue-200 text-blue-600 px-3 py-1 rounded-lg text-sm">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="removeLogbookEntry(${startIndex + index})" 
+                            class="bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1 rounded-lg text-sm">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div>
+                    <span class="text-sm text-gray-500">Max Depth</span>
+                    <p class="font-semibold">${entry.depth} m</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Duration</span>
+                    <p class="font-semibold">${entry.duration} min</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Water Temp</span>
+                    <p class="font-semibold">${entry.temperature ? entry.temperature + '°C' : '--'}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Gas Mix</span>
+                    <p class="font-semibold">${getGasMixLabel(entry.gasMix)}</p>
+                </div>
+            </div>
+            
+            ${entry.conditions ? `
+                <div class="mt-4">
+                    <span class="text-sm text-gray-500">Conditions</span>
+                    <p class="text-gray-700">${entry.conditions}</p>
+                </div>
+            ` : ''}
+            
+            ${entry.notes ? `
+                <div class="mt-4">
+                    <span class="text-sm text-gray-500">Notes</span>
+                    <p class="text-gray-700">${entry.notes}</p>
+                </div>
+            ` : ''}
+        `;
+        
+        logbookContainer.appendChild(entryElement);
+    });
+}
+
+// Add new logbook entry
+function addLogbookEntry(entry) {
+    // Add timestamp to entry
+    entry.timestamp = new Date().getTime();
+    
+    // Validate required fields
+    if (!entry.site || !entry.date || !entry.depth || !entry.duration) {
+        alert('Please fill in all required fields');
+        return;
+    }
+
+    logbookEntries.push(entry);
+    saveLogbookEntries();
+    renderLogbookEntries();
+}
+
+// Save logbook entries to localStorage
+function saveLogbookEntries() {
+    localStorage.setItem('logbookEntries', JSON.stringify(logbookEntries));
+}
+
+// Add functionality to remove logbook entries
+function removeLogbookEntry(index) {
+    if (confirm('Are you sure you want to delete this logbook entry?')) {
+        logbookEntries.splice(index, 1); // Remove the entry from the array
+        saveLogbookEntries(); // Save the updated logbook entries
+        renderLogbookEntries(); // Re-render the logbook entries
+    }
+}
+
+// Edit logbook entry
+function editLogbookEntry(entry, index) {
+    // Populate the modal with entry data
+    document.getElementById('logEntrySite').value = entry.site;
+    document.getElementById('logEntryDate').value = entry.date;
+    document.getElementById('logEntryDepth').value = entry.depth;
+    document.getElementById('logEntryDuration').value = entry.duration;
+    document.getElementById('logEntryTemp').value = entry.temperature || '';
+    document.getElementById('logEntryGasMix').value = entry.gasMix;
+    document.getElementById('logEntryConditions').value = entry.conditions || '';
+    document.getElementById('logEntryNotes').value = entry.notes || '';
+
+    // Set the update index on the save button
+    const saveBtn = document.getElementById('saveLogEntryBtn');
+    saveBtn.dataset.updateIndex = index;
+    saveBtn.textContent = 'Update Entry';
+
+    // Show the modal
+    document.getElementById('newLogEntryModal').classList.remove('hidden');
+}
+
+// Pagination controls
+function goToNextPage() {
+    currentPage++;
+    renderLogbookEntries();
+}
+
+function goToPrevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderLogbookEntries();
+    }
+}
+
+// Add event listeners for pagination
+document.getElementById('prevPageBtn').addEventListener('click', goToPrevPage);
+document.getElementById('nextPageBtn').addEventListener('click', goToNextPage);
+
+// Update range slider fill
+function updateRangeSliderFill(slider, otherSlider, isMin) {
+    const percent = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+    const otherPercent = (otherSlider.value - otherSlider.min) / (otherSlider.max - otherSlider.min) * 100;
+    
+    const parent = slider.closest('.multi-range');
+    if (isMin) {
+        parent.style.setProperty('--start', `${Math.min(percent, otherPercent)}%`);
+        parent.style.setProperty('--end', `${100 - Math.max(percent, otherPercent)}%`);
+    } else {
+        parent.style.setProperty('--start', `${Math.min(percent, otherPercent)}%`);
+        parent.style.setProperty('--end', `${100 - Math.max(percent, otherPercent)}%`);
+    }
+}
+
+// Add event listeners for the range sliders
+document.addEventListener('DOMContentLoaded', function() {
+    const depthMin = document.getElementById('logbookDepthMin');
+    const depthMax = document.getElementById('logbookDepthMax');
+    const durationMin = document.getElementById('logbookDurationMin');
+    const durationMax = document.getElementById('logbookDurationMax');
+    
+    // Initialize depth range fill
+    updateRangeSliderFill(depthMin, depthMax, true);
+    updateRangeSliderFill(depthMax, depthMin, false);
+    
+    // Initialize duration range fill
+    updateRangeSliderFill(durationMin, durationMax, true);
+    updateRangeSliderFill(durationMax, durationMin, false);
+    
+    // Add event listeners for depth range
+    depthMin.addEventListener('input', () => {
+        updateRangeSliderFill(depthMin, depthMax, true);
+        document.getElementById('depthValue').textContent = `${depthMin.value}m - ${depthMax.value}m`;
+    });
+    
+    depthMax.addEventListener('input', () => {
+        updateRangeSliderFill(depthMax, depthMin, false);
+        document.getElementById('depthValue').textContent = `${depthMin.value}m - ${depthMax.value}m`;
+    });
+    
+    // Add event listeners for duration range
+    durationMin.addEventListener('input', () => {
+        updateRangeSliderFill(durationMin, durationMax, true);
+        document.getElementById('durationValue').textContent = `${durationMin.value}min - ${durationMax.value}min`;
+    });
+    
+    durationMax.addEventListener('input', () => {
+        updateRangeSliderFill(durationMax, durationMin, false);
+        document.getElementById('durationValue').textContent = `${durationMin.value}min - ${durationMax.value}min`;
+    });
+    
+    // Initialize logbook
+    initializeLogbook();
+    
+    // Set today's date as default for new entries
+    const todayInput = document.getElementById('logEntryDate');
+    if (todayInput) {
+        todayInput.value = new Date().toISOString().split('T')[0];
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all components
+    initializeChecklist();
+    loadSavedPlans();
+    initDiveProfileChart();
+    setupSafetyStopTimer();
+    setupDragAndDrop();
+    initializeLogbook();
+
+    // ...existing code...
+});
