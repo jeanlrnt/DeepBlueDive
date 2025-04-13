@@ -1,2039 +1,222 @@
-// Tab functionality
-function openTab(evt, tabName) {
-    // Hide all tab content
-    const tabContents = document.getElementsByClassName("tab-content");
-    for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].classList.remove("active");
-    }
+// Imports des modules
+import divePlanner from './js/modules/dive-planner.js';
+import logbook from './js/modules/logbook.js';
+import safetyTimer from './js/modules/safety-timer.js';
+import { ChecklistManager } from './js/modules/checklist.js';
+import * as Utils from './js/modules/utils.js';
 
-    // Remove active class from all tab buttons
-    const tabButtons = document.getElementsByClassName("tab-button");
-    for (let i = 0; i < tabButtons.length; i++) {
-        tabButtons[i].classList.remove("bg-blue-600", "text-white");
-        tabButtons[i].classList.add("bg-white", "text-blue-600", "border");
-    }
+let checklistManager;
+let modalInstances = {};
 
-    // Show the current tab and add active class to button
-    document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.remove("bg-white", "text-blue-600", "border");
-    evt.currentTarget.classList.add("bg-blue-600", "text-white");
+// Initialize all components when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializeApplication();
+    setupTabNavigation();
+    setupLogbookFilters();
+    setupDivePlannerListeners();
+    setupModals();
+});
+
+function initializeApplication() {
+    // Initialize each module
+    divePlanner.initialize();
+    logbook.initialize();
+    safetyTimer.initialize();
+    checklistManager = new ChecklistManager();
 }
 
-// Modal functionality
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-}
-
-// Checklist functionality
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize checklist from localStorage or default data
-    initializeChecklist();
-
-    // Event listeners for buttons
-    document.getElementById('newCategoryBtn').addEventListener('click', showNewCategoryModal);
-    document.getElementById('newItemBtn').addEventListener('click', showNewItemModal);
-    document.getElementById('saveCategoryBtn').addEventListener('click', saveNewCategory);
-    document.getElementById('saveItemBtn').addEventListener('click', saveNewItem);
-    document.getElementById('saveChecklistBtn').addEventListener('click', saveChecklist);
-    document.getElementById('resetChecklistBtn').addEventListener('click', resetChecklist);
-    document.getElementById('exportChecklistBtn').addEventListener('click', showExportModal);
-    document.getElementById('importChecklistBtn').addEventListener('click', showImportModal);
-    document.getElementById('copyChecklistBtn').addEventListener('click', copyChecklistToClipboard);
-    document.getElementById('confirmImportBtn').addEventListener('click', importChecklist);
-    document.getElementById('updateItemBtn').addEventListener('click', updateItem);
-    document.getElementById('updateCategoryBtn').addEventListener('click', updateCategory);
-
-    // Initialize drag and drop
-    setupDragAndDrop();
-
-    // Initialize logbook
-    initializeLogbook();
-
-    document.getElementById('newLogEntryBtn').addEventListener('click', function () {
-        // Reset form fields
-        document.getElementById('logEntrySite').value = '';
-        document.getElementById('logEntryDate').value = new Date().toISOString().split('T')[0];
-        document.getElementById('logEntryDepth').value = '';
-        document.getElementById('logEntryDuration').value = '';
-        document.getElementById('logEntryTemp').value = '';
-        document.getElementById('logEntryGasMix').value = 'air';
-        document.getElementById('logEntryConditions').value = '';
-        document.getElementById('logEntryNotes').value = '';
-
-        // Reset save button state
-        const saveBtn = document.getElementById('saveLogEntryBtn');
-        saveBtn.textContent = 'Save Entry';
-        delete saveBtn.dataset.updateIndex;
-
-        // Show the modal
-        document.getElementById('newLogEntryModal').classList.remove('hidden');
-    });
-
-    document.getElementById('applyFiltersBtn').addEventListener('click', function () {
-        currentPage = 1;
-        renderLogbookEntries();
-    });
-
-    document.getElementById('prevPageBtn').addEventListener('click', goToPrevPage);
-    document.getElementById('nextPageBtn').addEventListener('click', goToNextPage);
-
-    document.getElementById('exportLogbookBtn').addEventListener('click', function () {
-        const dataStr = JSON.stringify(logbookEntries, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'logbook.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    });
-
-    // Add event listener for saving new logbook entry
-    document.getElementById('saveLogEntryBtn').addEventListener('click', function () {
-        // Get the form values
-        const entryData = {
-            site: document.getElementById('logEntrySite').value,
-            date: document.getElementById('logEntryDate').value,
-            depth: parseFloat(document.getElementById('logEntryDepth').value),
-            duration: parseFloat(document.getElementById('logEntryDuration').value),
-            temperature: parseFloat(document.getElementById('logEntryTemp').value) || null,
-            gasMix: document.getElementById('logEntryGasMix').value,
-            conditions: document.getElementById('logEntryConditions').value,
-            notes: document.getElementById('logEntryNotes').value
-        };
-
-        // Check if we're updating an existing entry
-        const updateIndex = this.dataset.updateIndex;
-        
-        if (updateIndex !== undefined) {
-            // Update existing entry
-            logbookEntries[updateIndex] = {
-                ...logbookEntries[updateIndex],
-                ...entryData,
-                timestamp: new Date().getTime() // Update timestamp
-            };
-            // Reset the update index
-            delete this.dataset.updateIndex;
-            this.textContent = 'Save Entry';
-        } else {
-            // Add new entry
-            addLogbookEntry(entryData);
-        }
-
-        saveLogbookEntries();
-        renderLogbookEntries();
-        closeModal('newLogEntryModal');
-    });
-
-    // Logbook filter event listeners
-    document.getElementById('logbookDateRange').addEventListener('change', function() {
-        const customDateRange = document.getElementById('customDateRange');
-        if (this.value === 'custom') {
-            customDateRange.classList.remove('hidden');
-        } else {
-            customDateRange.classList.add('hidden');
-        }
-    });
-
-    document.getElementById('resetFiltersBtn').addEventListener('click', function() {
-        // Reset all filters to default values
-        document.getElementById('logbookDateRange').value = 'all';
-        document.getElementById('logbookYearFilter').value = 'all';
-        document.getElementById('logbookMonthFilter').value = 'all';
-        document.getElementById('logbookSiteFilter').value = 'all';
-        document.getElementById('logbookDepthMin').value = '';
-        document.getElementById('logbookDepthMax').value = '';
-        document.getElementById('logbookDurationMin').value = '';
-        document.getElementById('logbookDurationMax').value = '';
-        document.getElementById('logbookGasMixFilter').value = 'all';
-        document.getElementById('customDateRange').classList.add('hidden');
-        document.getElementById('logbookDateFrom').value = '';
-        document.getElementById('logbookDateTo').value = '';
-        
-        // Reset to first page and render
-        currentPage = 1;
-        renderLogbookEntries();
-    });
-
-    // Initialize range slider fills
-    const depthMin = document.getElementById('logbookDepthMin');
-    const depthMax = document.getElementById('logbookDepthMax');
-    const durationMin = document.getElementById('logbookDurationMin');
-    const durationMax = document.getElementById('logbookDurationMax');
+function setupTabNavigation() {
+    const tabs = document.querySelectorAll('.nav-link[data-tab]');
     
-    // Initialize depth range fill
-    updateRangeSliderFill(depthMin, depthMax, true);
-    updateRangeSliderFill(depthMax, depthMin, false);
-    
-    // Initialize duration range fill
-    updateRangeSliderFill(durationMin, durationMax, true);
-    updateRangeSliderFill(durationMax, durationMin, false);
-});
-
-// Checklist data structure
-let checklistData = {
-    categories: [],
-    items: []
-};
-
-// Color classes mapping
-const colorClasses = {
-    blue: { bg: 'bg-blue-100', text: 'text-blue-600', border: 'border-blue-200' },
-    purple: { bg: 'bg-purple-100', text: 'text-purple-600', border: 'border-purple-200' },
-    yellow: { bg: 'bg-yellow-100', text: 'text-yellow-600', border: 'border-yellow-200' },
-    green: { bg: 'bg-green-100', text: 'text-green-600', border: 'border-green-200' },
-    red: { bg: 'bg-red-100', text: 'text-red-600', border: 'border-red-200' },
-    indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600', border: 'border-indigo-200' },
-    pink: { bg: 'bg-pink-100', text: 'text-pink-600', border: 'border-pink-200' },
-    orange: { bg: 'bg-orange-100', text: 'text-orange-600', border: 'border-orange-200' }
-};
-
-// Icon mapping
-const iconMapping = {
-    'suitcase': 'fa-suitcase',
-    'user': 'fa-user',
-    'shield-alt': 'fa-shield-alt',
-    'water': 'fa-water',
-    'tint': 'fa-tint',
-    'life-ring': 'fa-life-ring',
-    'weight-hanging': 'fa-weight-hanging',
-    'gauge': 'fa-gauge',
-    'mask': 'fa-mask'
-};
-
-// Initialize checklist
-function initializeChecklist() {
-    const savedChecklist = localStorage.getItem('diveChecklist');
-
-    if (savedChecklist) {
-        checklistData = JSON.parse(savedChecklist);
-    } else {
-        // Default checklist data
-        checklistData = {
-            categories: [
-                { id: 1, name: 'Main Equipment', icon: 'suitcase', color: 'blue' },
-                { id: 2, name: 'Personal Gear', icon: 'user', color: 'purple' },
-                { id: 3, name: 'Safety Equipment', icon: 'shield-alt', color: 'yellow' }
-            ],
-            items: [
-                { id: 1, categoryId: 1, text: 'BCD checked for leaks and proper inflation', checked: false },
-                { id: 2, categoryId: 1, text: 'Regulator breathing test (both primary and alternate)', checked: false },
-                { id: 3, categoryId: 1, text: 'Tank valve opens/closes properly', checked: false },
-                { id: 4, categoryId: 1, text: 'Weight system secure and quick-release functional', checked: false },
-                { id: 5, categoryId: 2, text: 'Mask fits properly with no leaks', checked: false },
-                { id: 6, categoryId: 2, text: 'Fins straps secure and comfortable', checked: false },
-                { id: 7, categoryId: 2, text: 'Exposure protection appropriate for conditions', checked: false },
-                { id: 8, categoryId: 2, text: 'Dive computer battery level adequate', checked: false },
-                { id: 9, categoryId: 3, text: 'SMB/spool present and functional', checked: false },
-                { id: 10, categoryId: 3, text: 'Cutting tool accessible', checked: false },
-                { id: 11, categoryId: 3, text: 'Whistle/alert device functional', checked: false }
-            ]
-        };
-    }
-
-    renderChecklist();
-    updateCompletionCount();
-}
-
-// Render checklist
-function renderChecklist() {
-    const container = document.getElementById('checklistContainer');
-    container.innerHTML = '';
-
-    // Group items by category
-    const itemsByCategory = {};
-    checklistData.items.forEach(item => {
-        if (!itemsByCategory[item.categoryId]) {
-            itemsByCategory[item.categoryId] = [];
-        }
-        itemsByCategory[item.categoryId].push(item);
-    });
-
-    // Sort categories by name
-    const sortedCategories = [...checklistData.categories].sort((a, b) => a.name.localeCompare(b.name));
-
-    // Render each category with its items
-    sortedCategories.forEach(category => {
-        const categoryItems = itemsByCategory[category.id] || [];
-
-        const categoryElement = document.createElement('div');
-        categoryElement.className = 'mb-6';
-
-        // Category header
-        const categoryHeader = document.createElement('div');
-        categoryHeader.className = 'flex items-center mb-4';
-
-        const iconDiv = document.createElement('div');
-        iconDiv.className = `w-8 h-8 rounded-full ${colorClasses[category.color].bg} flex items-center justify-center mr-3`;
-
-        const icon = document.createElement('i');
-        icon.className = `fas ${iconMapping[category.icon] || 'fa-question'} ${colorClasses[category.color].text}`;
-        iconDiv.appendChild(icon);
-
-        const categoryName = document.createElement('h3');
-        categoryName.className = 'font-semibold text-blue-900';
-        categoryName.textContent = category.name;
-
-        categoryHeader.appendChild(iconDiv);
-        categoryHeader.appendChild(categoryName);
-
-        // Items list
-        const itemsList = document.createElement('div');
-        itemsList.className = 'space-y-3 pl-11';
-        itemsList.dataset.categoryId = category.id;
-
-        categoryItems.forEach(item => {
-            const itemElement = document.createElement('div');
-            itemElement.className = `checklist-item flex items-center p-3 border rounded-lg cursor-pointer transition-all ${item.checked ? 'checked' : ''}`;
-            itemElement.dataset.itemId = item.id;
-            itemElement.draggable = true;
-
-            const checkBox = document.createElement('div');
-            checkBox.className = `w-5 h-5 rounded-full border-2 ${item.checked ? 'bg-green-100 border-green-300' : 'border-gray-300'} mr-3 flex-shrink-0 flex items-center justify-center`;
-
-            if (item.checked) {
-                const checkIcon = document.createElement('i');
-                checkIcon.className = 'fas fa-check text-green-600 text-xs';
-                checkBox.appendChild(checkIcon);
-            }
-
-            const itemText = document.createElement('span');
-            itemText.className = item.checked ? 'text-gray-500 line-through' : '';
-            itemText.textContent = item.text;
-
-            // Add edit button
-            const editBtn = document.createElement('button');
-            editBtn.className = 'ml-2 text-gray-400 hover:text-blue-500';
-            editBtn.innerHTML = '<i class="fas fa-edit text-xs"></i>';
-            editBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showEditItemModal(item.id);
-            });
-
-            // Add delete button
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'ml-2 text-gray-400 hover:text-red-500';
-            deleteBtn.innerHTML = '<i class="fas fa-trash-alt text-xs"></i>';
-            deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                deleteChecklistItem(item.id);
-            });
-
-            itemElement.appendChild(checkBox);
-            itemElement.appendChild(itemText);
-            itemElement.appendChild(editBtn);
-            itemElement.appendChild(deleteBtn);
-
-            itemElement.addEventListener('click', function () {
-                toggleCheck(this);
-            });
-
-            // Drag and drop event listeners
-            itemElement.addEventListener('dragstart', handleDragStart);
-            itemElement.addEventListener('dragover', handleDragOver);
-            itemElement.addEventListener('dragleave', handleDragLeave);
-            itemElement.addEventListener('drop', handleDrop);
-            itemElement.addEventListener('dragend', handleDragEnd);
-
-            itemsList.appendChild(itemElement);
-        });
-
-        // Add edit category button
-        const editCategoryBtn = document.createElement('button');
-        editCategoryBtn.className = 'ml-2 text-sm text-blue-600 hover:text-blue-800 flex items-center';
-        editCategoryBtn.innerHTML = '<i class="fas fa-edit mr-1"></i> Edit';
-        editCategoryBtn.addEventListener('click', () => {
-            showEditCategoryModal(category.id);
-        });
-
-        // Add delete category button
-        const deleteCategoryBtn = document.createElement('button');
-        deleteCategoryBtn.className = 'ml-2 text-sm text-red-600 hover:text-red-800 flex items-center';
-        deleteCategoryBtn.innerHTML = '<i class="fas fa-trash mr-1"></i> Delete';
-        deleteCategoryBtn.addEventListener('click', () => {
-            if (confirm(`Delete category "${category.name}" and all its items?`)) {
-                deleteCategory(category.id);
-            }
-        });
-
-        categoryHeader.appendChild(editCategoryBtn);
-        categoryHeader.appendChild(deleteCategoryBtn);
-
-        categoryElement.appendChild(categoryHeader);
-        categoryElement.appendChild(itemsList);
-        container.appendChild(categoryElement);
-    });
-
-    // Update category dropdown in new item modal
-    updateCategoryDropdown();
-}
-
-// Toggle checklist item
-function toggleCheck(element) {
-    const itemId = parseInt(element.dataset.itemId);
-    const item = checklistData.items.find(i => i.id === itemId);
-
-    if (item) {
-        item.checked = !item.checked;
-        saveChecklist();
-
-        if (item.checked) {
-            element.classList.add('checked');
-            const checkBox = element.querySelector('div');
-            checkBox.innerHTML = '<i class="fas fa-check text-green-600 text-xs"></i>';
-            checkBox.classList.remove('border-gray-300');
-            checkBox.classList.add('bg-green-100', 'border-green-300');
-            const text = element.querySelector('span');
-            text.classList.add('text-gray-500', 'line-through');
-        } else {
-            element.classList.remove('checked');
-            const checkBox = element.querySelector('div');
-            checkBox.innerHTML = '';
-            checkBox.classList.remove('bg-green-100', 'border-green-300');
-            checkBox.classList.add('border-gray-300');
-            const text = element.querySelector('span');
-            text.classList.remove('text-gray-500', 'line-through');
-        }
-
-        updateCompletionCount();
-    }
-}
-
-// Update completion count
-function updateCompletionCount() {
-    const totalItems = checklistData.items.length;
-    const checkedItems = checklistData.items.filter(item => item.checked).length;
-    const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
-
-    document.getElementById('completionCount').textContent = `${checkedItems}/${totalItems}`;
-    document.getElementById('completionPercentage').textContent = `(${percentage}%)`;
-}
-
-// Show new category modal
-function showNewCategoryModal() {
-    document.getElementById('categoryName').value = '';
-    document.getElementById('categoryIcon').value = 'suitcase';
-    document.getElementById('categoryColor').value = 'blue';
-    document.getElementById('newCategoryModal').classList.remove('hidden');
-}
-
-// Show edit category modal
-function showEditCategoryModal(categoryId) {
-    const category = checklistData.categories.find(c => c.id === categoryId);
-    if (!category) return;
-
-    document.getElementById('editCategoryName').value = category.name;
-    document.getElementById('editCategoryIcon').value = category.icon;
-    document.getElementById('editCategoryColor').value = category.color;
-    document.getElementById('editCategoryId').value = categoryId;
-
-    // Update dropdowns
-    updateCategoryDropdown();
-
-    document.getElementById('editCategoryModal').classList.remove('hidden');
-}
-
-// Show new item modal
-function showNewItemModal() {
-    if (checklistData.categories.length === 0) {
-        alert('Please create a category first!');
-        showNewCategoryModal();
-        return;
-    }
-
-    document.getElementById('itemText').value = '';
-    document.getElementById('itemCategory').value = checklistData.categories[0].id;
-    document.getElementById('newItemModal').classList.remove('hidden');
-}
-
-// Show edit item modal
-function showEditItemModal(itemId) {
-    const item = checklistData.items.find(i => i.id === itemId);
-    if (!item) return;
-
-    document.getElementById('editItemText').value = item.text;
-    document.getElementById('editItemCategory').value = item.categoryId;
-    document.getElementById('editItemId').value = itemId;
-
-    // Update dropdowns
-    updateCategoryDropdown();
-
-    document.getElementById('editItemModal').classList.remove('hidden');
-}
-
-// Update category dropdown
-function updateCategoryDropdown() {
-    const dropdowns = [
-        document.getElementById('itemCategory'),
-        document.getElementById('editItemCategory')
-    ];
-
-    dropdowns.forEach(dropdown => {
-        if (!dropdown) return;
-
-        dropdown.innerHTML = '';
-
-        // Sort categories by name
-        const sortedCategories = [...checklistData.categories].sort((a, b) => a.name.localeCompare(b.name));
-
-        sortedCategories.forEach(category => {
-            const option = document.createElement('option');
-            option.value = category.id;
-            option.textContent = category.name;
-            dropdown.appendChild(option);
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (event) => {
+            event.preventDefault();
+            const tabName = tab.getAttribute('data-tab');
+            openTab(event.currentTarget, tabName);
         });
     });
+
+    // Open default tab
+    const defaultTab = document.querySelector('.nav-link[data-tab="checklist"]');
+    if (defaultTab) {
+        openTab(defaultTab, 'checklist');
+    }
 }
 
-// Save new category
-function saveNewCategory() {
-    const name = document.getElementById('categoryName').value.trim();
-    const icon = document.getElementById('categoryIcon').value;
-    const color = document.getElementById('categoryColor').value;
-
-    if (!name) {
-        alert('Please enter a category name');
-        return;
-    }
-
-    // Generate new ID
-    const newId = checklistData.categories.length > 0 ?
-        Math.max(...checklistData.categories.map(c => c.id)) + 1 : 1;
-
-    // Add new category
-    checklistData.categories.push({
-        id: newId,
-        name,
-        icon,
-        color
+// Handle tab switching
+function openTab(buttonElement, tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-pane').forEach(tab => {
+        tab.classList.remove('show', 'active');
     });
 
-    // Save and render
-    saveChecklist();
-    renderChecklist();
-
-    // Close modal
-    document.getElementById('newCategoryModal').classList.add('hidden');
-
-    // Pulse save button to show success
-    document.getElementById('saveChecklistBtn').classList.add('pulse');
-    setTimeout(() => {
-        document.getElementById('saveChecklistBtn').classList.remove('pulse');
-    }, 500);
-}
-
-// Update category
-function updateCategory() {
-    const categoryId = parseInt(document.getElementById('editCategoryId').value);
-    const name = document.getElementById('editCategoryName').value.trim();
-    const icon = document.getElementById('editCategoryIcon').value;
-    const color = document.getElementById('editCategoryColor').value;
-
-    if (!name) {
-        alert('Please enter a category name');
-        return;
-    }
-
-    const categoryIndex = checklistData.categories.findIndex(c => c.id === categoryId);
-    if (categoryIndex !== -1) {
-        checklistData.categories[categoryIndex] = {
-            id: categoryId,
-            name,
-            icon,
-            color
-        };
-
-        // Save and render
-        saveChecklist();
-        renderChecklist();
-
-        // Close modal
-        document.getElementById('editCategoryModal').classList.add('hidden');
-
-        // Pulse save button to show success
-        document.getElementById('saveChecklistBtn').classList.add('pulse');
-        setTimeout(() => {
-            document.getElementById('saveChecklistBtn').classList.remove('pulse');
-        }, 500);
-    }
-}
-
-// Save new item
-function saveNewItem() {
-    const text = document.getElementById('itemText').value.trim();
-    const categoryId = parseInt(document.getElementById('itemCategory').value);
-
-    if (!text) {
-        alert('Please enter item text');
-        return;
-    }
-
-    // Generate new ID
-    const newId = checklistData.items.length > 0 ?
-        Math.max(...checklistData.items.map(i => i.id)) + 1 : 1;
-
-    // Add new item
-    checklistData.items.push({
-        id: newId,
-        categoryId,
-        text,
-        checked: false
+    // Reset all tab buttons
+    document.querySelectorAll('.nav-link').forEach(button => {
+        button.classList.remove('active');
     });
 
-    // Save and render
-    saveChecklist();
-    renderChecklist();
-
-    // Close modal
-    document.getElementById('newItemModal').classList.add('hidden');
-
-    // Pulse save button to show success
-    document.getElementById('saveChecklistBtn').classList.add('pulse');
-    setTimeout(() => {
-        document.getElementById('saveChecklistBtn').classList.remove('pulse');
-    }, 500);
-}
-
-// Update item
-function updateItem() {
-    const itemId = parseInt(document.getElementById('editItemId').value);
-    const text = document.getElementById('editItemText').value.trim();
-    const categoryId = parseInt(document.getElementById('editItemCategory').value);
-
-    if (!text) {
-        alert('Please enter item text');
-        return;
+    // Show selected tab content
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('show', 'active');
     }
 
-    const itemIndex = checklistData.items.findIndex(i => i.id === itemId);
-    if (itemIndex !== -1) {
-        checklistData.items[itemIndex] = {
-            id: itemId,
-            categoryId,
-            text,
-            checked: checklistData.items[itemIndex].checked
-        };
+    // Highlight selected tab button
+    buttonElement.classList.add('active');
+}
 
-        // Save and render
-        saveChecklist();
-        renderChecklist();
-
-        // Close modal
-        document.getElementById('editItemModal').classList.add('hidden');
-
-        // Pulse save button to show success
-        document.getElementById('saveChecklistBtn').classList.add('pulse');
-        setTimeout(() => {
-            document.getElementById('saveChecklistBtn').classList.remove('pulse');
-        }, 500);
+// Make closeModal function globally available
+window.closeModal = function(modalId) {
+    if (modalInstances[modalId]) {
+        modalInstances[modalId].hide();
     }
 }
 
-// Delete checklist item
-function deleteChecklistItem(itemId) {
-    if (confirm('Are you sure you want to delete this item?')) {
-        checklistData.items = checklistData.items.filter(item => item.id !== itemId);
-        saveChecklist();
-        renderChecklist();
-
-        // Pulse save button to show success
-        document.getElementById('saveChecklistBtn').classList.add('pulse');
-        setTimeout(() => {
-            document.getElementById('saveChecklistBtn').classList.remove('pulse');
-        }, 500);
+// Make showModal function globally available
+window.showModal = function(modalId) {
+    if (modalInstances[modalId]) {
+        modalInstances[modalId].show();
     }
 }
 
-// Delete category
-function deleteCategory(categoryId) {
-    // Remove category and its items
-    checklistData.categories = checklistData.categories.filter(c => c.id !== categoryId);
-    checklistData.items = checklistData.items.filter(i => i.categoryId !== categoryId);
+function setupLogbookFilters() {
+    const logbookDateRange = document.getElementById('logbookDateRange');
+    const customDateRange = document.getElementById('customDateRange');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
 
-    saveChecklist();
-    renderChecklist();
+    logbookDateRange.addEventListener('change', () => {
+        customDateRange.style.display = logbookDateRange.value === 'custom' ? 'grid' : 'none';
+    });
 
-    // Pulse save button to show success
-    document.getElementById('saveChecklistBtn').classList.add('pulse');
-    setTimeout(() => {
-        document.getElementById('saveChecklistBtn').classList.remove('pulse');
-    }, 500);
+    resetFiltersBtn.addEventListener('click', resetFilters);
+    applyFiltersBtn.addEventListener('click', logbook.applyFilters);
+
+    document.getElementById('prevPageBtn').addEventListener('click', logbook.goToPrevPage);
+    document.getElementById('nextPageBtn').addEventListener('click', logbook.goToNextPage);
 }
 
-// Save checklist to localStorage
-function saveChecklist() {
-    localStorage.setItem('diveChecklist', JSON.stringify(checklistData));
-    updateCompletionCount();
-}
+function setupDivePlannerListeners() {
+    const gasMixSelect = document.getElementById('gasMix');
+    const customGasContainer = document.getElementById('customGasContainer');
+    const maxDepthInput = document.getElementById('maxDepth');
+    const customO2Input = document.getElementById('customO2');
 
-// Reset checklist
-function resetChecklist() {
-    if (confirm('Reset all checklist items to unchecked?')) {
-        checklistData.items.forEach(item => {
-            item.checked = false;
-        });
+    gasMixSelect.addEventListener('change', () => {
+        customGasContainer.style.display = gasMixSelect.value === 'custom' ? 'block' : 'none';
+        updateSafetyCalculations();
+    });
 
-        saveChecklist();
-        renderChecklist();
+    [maxDepthInput, customO2Input].forEach(input => {
+        input.addEventListener('input', updateSafetyCalculations);
+    });
 
-        // Pulse save button to show success
-        document.getElementById('saveChecklistBtn').classList.add('pulse');
-        setTimeout(() => {
-            document.getElementById('saveChecklistBtn').classList.remove('pulse');
-        }, 500);
-    }
-}
-
-// Show export modal
-function showExportModal() {
-    document.getElementById('importExportTitle').textContent = 'Export Checklist';
-    document.getElementById('exportSection').classList.remove('hidden');
-    document.getElementById('importSection').classList.add('hidden');
-    document.getElementById('confirmImportBtn').classList.add('hidden');
-
-    // Populate textarea with checklist data
-    document.getElementById('checklistData').value = JSON.stringify(checklistData, null, 2);
-
-    document.getElementById('importExportModal').classList.remove('hidden');
-}
-
-// Show import modal
-function showImportModal() {
-    document.getElementById('importExportTitle').textContent = 'Import Checklist';
-    document.getElementById('exportSection').classList.add('hidden');
-    document.getElementById('importSection').classList.remove('hidden');
-    document.getElementById('confirmImportBtn').classList.remove('hidden');
-
-    // Clear import textarea
-    document.getElementById('importChecklistData').value = '';
-
-    document.getElementById('importExportModal').classList.remove('hidden');
-}
-
-// Copy checklist to clipboard
-function copyChecklistToClipboard() {
-    const checklistDataText = document.getElementById('checklistData');
-    checklistDataText.select();
-    document.execCommand('copy');
-
-    // Show feedback
-    const copyBtn = document.getElementById('copyChecklistBtn');
-    const originalText = copyBtn.innerHTML;
-    copyBtn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
-
-    setTimeout(() => {
-        copyBtn.innerHTML = originalText;
-    }, 2000);
-}
-
-// Import checklist
-function importChecklist() {
-    const importData = document.getElementById('importChecklistData').value.trim();
-
-    if (!importData) {
-        alert('Please paste checklist data');
-        return;
-    }
-
-    try {
-        const parsedData = JSON.parse(importData);
-
-        // Basic validation
-        if (!parsedData.categories || !parsedData.items) {
-            throw new Error('Invalid checklist format');
+    document.getElementById('savePlanBtn').addEventListener('click', () => {
+        const planData = collectPlanData();
+        if (divePlanner.savePlan(planData)) {
+            Utils.closeModal('planDetailsModal');
         }
-
-        // Replace current checklist
-        checklistData = parsedData;
-        saveChecklist();
-        renderChecklist();
-
-        // Close modal
-        document.getElementById('importExportModal').classList.add('hidden');
-
-        // Pulse save button to show success
-        document.getElementById('saveChecklistBtn').classList.add('pulse');
-        setTimeout(() => {
-            document.getElementById('saveChecklistBtn').classList.remove('pulse');
-        }, 500);
-
-        alert('Checklist imported successfully!');
-    } catch (e) {
-        alert('Error importing checklist: ' + e.message);
-    }
-}
-
-// Drag and drop functionality
-let draggedItem = null;
-
-function setupDragAndDrop() {
-    const checklistContainer = document.getElementById('checklistContainer');
-
-    // Make categories droppable
-    const categoryLists = checklistContainer.querySelectorAll('[data-category-id]');
-    categoryLists.forEach(list => {
-        list.addEventListener('dragover', handleDragOver);
-        list.addEventListener('dragleave', handleDragLeave);
-        list.addEventListener('drop', handleDrop);
     });
-}
 
-function handleDragStart(e) {
-    draggedItem = this;
-    this.classList.add('dragging');
-    e.dataTransfer.setData('text/plain', this.dataset.itemId);
-    e.dataTransfer.effectAllowed = 'move';
-}
-
-function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-
-    // Highlight drop target
-    if (this.classList.contains('checklist-item')) {
-        this.classList.add('over');
-    } else if (this.dataset.categoryId) {
-        // If dragging over a category list
-        this.style.backgroundColor = '#f0f9ff';
-    }
-}
-
-function handleDragLeave() {
-    this.classList.remove('over');
-    if (this.dataset.categoryId) {
-        this.style.backgroundColor = '';
-    }
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    this.classList.remove('over');
-
-    if (this.dataset.categoryId) {
-        this.style.backgroundColor = '';
-    }
-
-    const itemId = parseInt(e.dataTransfer.getData('text/plain'));
-    const targetCategoryId = this.dataset.categoryId ? parseInt(this.dataset.categoryId) : null;
-
-    // Find the item in our data
-    const item = checklistData.items.find(i => i.id === itemId);
-
-    if (item) {
-        // If dropped on another item, we'll insert before/after that item
-        if (this.classList.contains('checklist-item')) {
-            const targetItemId = parseInt(this.dataset.itemId);
-            const targetIndex = checklistData.items.findIndex(i => i.id === targetItemId);
-
-            // Remove from current position
-            const currentIndex = checklistData.items.findIndex(i => i.id === itemId);
-            checklistData.items.splice(currentIndex, 1);
-
-            // Insert at new position
-            const rect = this.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
-            const insertPosition = e.clientY < midpoint ? targetIndex : targetIndex + 1;
-
-            checklistData.items.splice(insertPosition, 0, item);
+    document.getElementById('deletePlanBtn').addEventListener('click', (event) => {
+        const planId = event.currentTarget.dataset.planId;
+        if (divePlanner.deletePlan(planId)) {
+            Utils.closeModal('planDetailsModal');
         }
-        // If dropped on a category list (but not on an item)
-        else if (targetCategoryId) {
-            item.categoryId = targetCategoryId;
+    });
+}
+
+function setupModals() {
+    // Initialize Bootstrap modals
+    document.querySelectorAll('.modal.fade').forEach(modalElement => {
+        const modalId = modalElement.id;
+        modalInstances[modalId] = new bootstrap.Modal(modalElement);
+    });
+
+    // Setup modal event listeners
+    document.getElementById('newLogEntryBtn')?.addEventListener('click', () => {
+        const dateInput = document.getElementById('logEntryDate');
+        if (dateInput) {
+            dateInput.value = new Date().toISOString().split('T')[0];
         }
-
-        saveChecklist();
-        renderChecklist();
-
-        // Pulse save button to show success
-        document.getElementById('saveChecklistBtn').classList.add('pulse');
-        setTimeout(() => {
-            document.getElementById('saveChecklistBtn').classList.remove('pulse');
-        }, 500);
-    }
-}
-
-function handleDragEnd() {
-    this.classList.remove('dragging');
-    draggedItem = null;
-
-    // Remove all over classes
-    document.querySelectorAll('.checklist-item.over').forEach(item => {
-        item.classList.remove('over');
+        modalInstances['newLogEntryModal'].show();
     });
 
-    document.querySelectorAll('[data-category-id]').forEach(list => {
-        list.style.backgroundColor = '';
-    });
-}
-
-// Initialize map
-let map = L.map('diveMap').setView([20, 0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-let marker = null;
-map.on('click', function (e) {
-    if (marker) {
-        map.removeLayer(marker);
-    }
-    marker = L.marker(e.latlng).addTo(map);
-});
-
-// Dive plan data
-let divePlans = [];
-let currentPlanId = null;
-
-// DOM elements
-const diveSiteInput = document.getElementById('diveSite');
-const diveDateInput = document.getElementById('diveDate');
-const maxDepthInput = document.getElementById('maxDepth');
-const diveDurationInput = document.getElementById('diveDuration');
-const waterTempInput = document.getElementById('waterTemp');
-const gasMixSelect = document.getElementById('gasMix');
-const customGasContainer = document.getElementById('customGasContainer');
-const customO2Input = document.getElementById('customO2');
-const diveObjectivesInput = document.getElementById('diveObjectives');
-const diveNotesInput = document.getElementById('diveNotes');
-
-// Safety calculation elements
-const noDecoTimeEl = document.getElementById('noDecoTime');
-const surfaceIntervalEl = document.getElementById('surfaceInterval');
-const modDepthEl = document.getElementById('modDepth');
-const safetyStopEl = document.getElementById('safetyStop');
-
-// Buttons
-const newDivePlanBtn = document.getElementById('newDivePlanBtn');
-const clearPlanBtn = document.getElementById('clearPlanBtn');
-const savePlanBtn = document.getElementById('savePlanBtn');
-
-// Saved plans container
-const savedPlansContainer = document.getElementById('savedPlansContainer');
-const noPlansMessage = document.getElementById('noPlansMessage');
-
-// Modal elements
-const planDetailsModal = document.getElementById('planDetailsModal');
-
-// Dive profile chart
-let diveProfileChart = null;
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', function () {
-    // Load saved plans from localStorage
-    loadSavedPlans();
-
-    // Initialize dive profile chart
-    initDiveProfileChart();
-
-    // Set default date to today
-    const today = new Date().toISOString().split('T')[0];
-    diveDateInput.value = today;
-
-    // Gas mix change handler
-    gasMixSelect.addEventListener('change', function () {
-        if (this.value === 'custom') {
-            customGasContainer.classList.remove('hidden');
-        } else {
-            customGasContainer.classList.add('hidden');
+    document.getElementById('saveLogEntryBtn')?.addEventListener('click', () => {
+        const entry = collectLogEntryData();
+        if (logbook.addEntry(entry)) {
+            modalInstances['newLogEntryModal'].hide();
         }
-        calculateSafety();
     });
 
-    // Input change handlers for safety calculations
-    maxDepthInput.addEventListener('input', calculateSafety);
-    diveDurationInput.addEventListener('input', calculateSafety);
-    customO2Input.addEventListener('input', calculateSafety);
+    // Gestion des événements de la modale de détails du plan
+    document.getElementById('loadPlanBtn')?.addEventListener('click', (event) => {
+        const planId = event.currentTarget.dataset.planId;
+        if (planId) {
+            divePlanner.loadPlan(planId);
+            modalInstances['planDetailsModal'].hide();
+        }
+    });
 
-    // Button handlers
-    newDivePlanBtn.addEventListener('click', clearPlan);
-    clearPlanBtn.addEventListener('click', clearPlan);
-    savePlanBtn.addEventListener('click', savePlan);
-
-    // Nitrox calculator
-    document.getElementById('nitroxO2').addEventListener('input', calculateNitrox);
-    document.getElementById('calculateBestMixBtn').addEventListener('click', calculateBestMix);
-
-    // NDL calculator
-    document.getElementById('ndlDepth').addEventListener('input', calculateNDL);
-    document.getElementById('ndlGasMix').addEventListener('change', calculateNDL);
-    document.getElementById('calculateNdlBtn').addEventListener('click', calculateNDL);
-
-    // Safety stop timer
-    setupSafetyStopTimer();
-});
-
-// Calculate safety parameters
-function calculateSafety() {
-    const depth = parseFloat(maxDepthInput.value) || 0;
-    const duration = parseFloat(diveDurationInput.value) || 0;
-
-    // Get O2 percentage based on gas mix
-    let o2Percentage = 21; // Default to air
-    if (gasMixSelect.value === 'nitrox32') {
-        o2Percentage = 32;
-    } else if (gasMixSelect.value === 'nitrox36') {
-        o2Percentage = 36;
-    } else if (gasMixSelect.value === 'custom') {
-        o2Percentage = parseFloat(customO2Input.value) || 21;
-    }
-
-    // Calculate MOD (Maximum Operating Depth)
-    // MOD = ( (PpO2 / FO2) - 1 ) * 10
-    // Where PpO2 is the maximum partial pressure of O2 (typically 1.4 for recreational diving)
-    const mod = ((1.4 / (o2Percentage / 100)) - 1) * 10;
-    modDepthEl.textContent = mod.toFixed(1) + ' m';
-
-    // Calculate no decompression limit (simplified)
-    // This is a very simplified approximation - real dive tables are more complex
-    let ndl = 0;
-    if (depth <= 12) {
-        ndl = 200; // Very long NDL for shallow dives
-    } else if (depth <= 18) {
-        ndl = 60;
-    } else if (depth <= 21) {
-        ndl = 45;
-    } else if (depth <= 24) {
-        ndl = 35;
-    } else if (depth <= 27) {
-        ndl = 25;
-    } else if (depth <= 30) {
-        ndl = 20;
-    } else if (depth <= 33) {
-        ndl = 15;
-    } else if (depth <= 36) {
-        ndl = 10;
-    } else {
-        ndl = 5; // Very short for deep dives
-    }
-
-    // Adjust NDL for Nitrox
-    if (o2Percentage > 21) {
-        // Nitrox extends NDL - simplified calculation
-        const airEAD = ((1 - (o2Percentage / 100)) / 0.79) * (depth + 10) - 10;
-        const airNdl = calculateAirNDL(airEAD);
-        ndl = Math.min(ndl * 1.5, airNdl * 1.5); // Cap the extension
-    }
-
-    noDecoTimeEl.textContent = ndl.toFixed(0) + ' min';
-
-    // Calculate recommended surface interval
-    // Simplified - based on dive duration and depth
-    let surfaceInterval = 0;
-    if (duration <= 30) {
-        surfaceInterval = 1;
-    } else if (duration <= 60) {
-        surfaceInterval = 3;
-    } else {
-        surfaceInterval = 5;
-    }
-
-    // Longer surface interval for deeper dives
-    if (depth > 18) {
-        surfaceInterval += 1;
-    }
-    if (depth > 24) {
-        surfaceInterval += 1;
-    }
-
-    surfaceIntervalEl.textContent = surfaceInterval + ' hrs';
-
-    // Safety stop recommendation
-    let safetyStop = '3 min at 5m';
-    if (depth > 30) {
-        safetyStop = '5 min at 5m';
-    } else if (depth > 18) {
-        safetyStop = '3-5 min at 5m';
-    }
-    safetyStopEl.textContent = safetyStop;
-
-    // Update dive profile chart
-    updateDiveProfileChart(depth, duration);
-}
-
-// Simplified air NDL calculation for EAD
-function calculateAirNDL(depth) {
-    if (depth <= 12) return 200;
-    if (depth <= 18) return 60;
-    if (depth <= 21) return 45;
-    if (depth <= 24) return 35;
-    if (depth <= 27) return 25;
-    if (depth <= 30) return 20;
-    if (depth <= 33) return 15;
-    if (depth <= 36) return 10;
-    return 5;
-}
-
-// Initialize dive profile chart
-function initDiveProfileChart() {
-    const ctx = document.getElementById('diveProfileChart').getContext('2d');
-    diveProfileChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Start', 'Descent', 'Bottom', 'Ascent', 'Safety Stop', 'Surface'],
-            datasets: [{
-                label: 'Depth (m)',
-                data: [0, 0, 0, 0, 0, 0],
-                borderColor: '#006994',
-                backgroundColor: 'rgba(0, 105, 148, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return 'Depth: ' + context.parsed.y + 'm';
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    reverse: true,
-                    title: {
-                        display: true,
-                        text: 'Depth (m)'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Dive Phase'
-                    }
-                }
+    document.getElementById('deletePlanBtn')?.addEventListener('click', (event) => {
+        const planId = event.currentTarget.dataset.planId;
+        if (planId && confirm('Êtes-vous sûr de vouloir supprimer ce plan de plongée ?')) {
+            if (divePlanner.deletePlan(planId)) {
+                modalInstances['planDetailsModal'].hide();
             }
         }
     });
 }
 
-// Update dive profile chart
-function updateDiveProfileChart(depth, duration) {
-    if (!diveProfileChart) return;
-
-    // Calculate time distribution (simplified)
-    const descentTime = Math.min(5, duration * 0.1); // 10% of dive time or max 5 min
-    const ascentTime = Math.min(5, duration * 0.1); // 10% of dive time or max 5 min
-    const bottomTime = duration - descentTime - ascentTime;
-
-    // Update chart data
-    diveProfileChart.data.datasets[0].data = [
-        0, // Start
-        depth, // Descent
-        depth, // Bottom
-        5, // Ascent to safety stop
-        5, // Safety stop
-        0 // Surface
-    ];
-
-    // Update labels based on times
-    diveProfileChart.data.labels = [
-        'Start (0 min)',
-        `Descent (${descentTime.toFixed(0)} min)`,
-        `Bottom (${bottomTime.toFixed(0)} min)`,
-        `Ascent (${ascentTime.toFixed(0)} min)`,
-        'Safety Stop',
-        'Surface'
-    ];
-
-    diveProfileChart.update();
-}
-
-// Clear dive plan form
-function clearPlan() {
-    diveSiteInput.value = '';
-    maxDepthInput.value = '';
-    diveDurationInput.value = '';
-    waterTempInput.value = '';
-    gasMixSelect.value = 'air';
-    customGasContainer.classList.add('hidden');
-    customO2Input.value = '';
-    diveObjectivesInput.value = '';
-    diveNotesInput.value = '';
-
-    // Reset safety calculations
-    noDecoTimeEl.textContent = '-- min';
-    surfaceIntervalEl.textContent = '-- hrs';
-    modDepthEl.textContent = '-- m';
-    safetyStopEl.textContent = '3 min at 5m';
-
-    // Reset map marker
-    if (marker) {
-        map.removeLayer(marker);
-        marker = null;
-    }
-
-    // Reset current plan ID
-    currentPlanId = null;
-
-    // Reset dive profile chart
-    if (diveProfileChart) {
-        diveProfileChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0];
-        diveProfileChart.update();
-    }
-}
-
-// Save dive plan
-function savePlan() {
-    // Validate required fields
-    if (!diveSiteInput.value || !maxDepthInput.value || !diveDurationInput.value) {
-        alert('Please fill in all required fields (Dive Site, Max Depth, Duration)');
-        return;
-    }
-
-    // Get O2 percentage based on gas mix
-    let o2Percentage = 21; // Default to air
-    if (gasMixSelect.value === 'nitrox32') {
-        o2Percentage = 32;
-    } else if (gasMixSelect.value === 'nitrox36') {
-        o2Percentage = 36;
-    } else if (gasMixSelect.value === 'custom') {
-        o2Percentage = parseFloat(customO2Input.value) || 21;
-    }
-
-    // Get marker location if exists
-    let location = null;
-    if (marker) {
-        location = {
-            lat: marker.getLatLng().lat,
-            lng: marker.getLatLng().lng
-        };
-    }
-
-    // Create plan object
-    const plan = {
-        id: currentPlanId || Date.now().toString(),
-        site: diveSiteInput.value,
-        date: diveDateInput.value,
-        maxDepth: parseFloat(maxDepthInput.value),
-        duration: parseFloat(diveDurationInput.value),
-        waterTemp: parseFloat(waterTempInput.value) || null,
-        gasMix: gasMixSelect.value,
-        o2Percentage: o2Percentage,
-        objectives: diveObjectivesInput.value,
-        notes: diveNotesInput.value,
-        location: location,
-        noDecoTime: noDecoTimeEl.textContent,
-        surfaceInterval: surfaceIntervalEl.textContent,
-        modDepth: modDepthEl.textContent,
-        safetyStop: safetyStopEl.textContent,
-        createdAt: new Date().toISOString()
+function collectPlanData() {
+    return {
+        site: document.getElementById('diveSite').value,
+        date: document.getElementById('diveDate').value,
+        maxDepth: parseFloat(document.getElementById('maxDepth').value),
+        duration: parseFloat(document.getElementById('diveDuration').value),
+        waterTemp: parseFloat(document.getElementById('waterTemp').value) || null,
+        gasMix: document.getElementById('gasMix').value,
+        o2Percentage: document.getElementById('gasMix').value === 'custom' ? 
+            parseFloat(document.getElementById('customO2').value) : null,
+        objectives: document.getElementById('diveObjectives').value,
+        notes: document.getElementById('diveNotes').value
     };
-
-    // Update or add plan
-    if (currentPlanId) {
-        // Update existing plan
-        const index = divePlans.findIndex(p => p.id === currentPlanId);
-        if (index !== -1) {
-            divePlans[index] = plan;
-        }
-    } else {
-        // Add new plan
-        divePlans.push(plan);
-    }
-
-    // Save to localStorage
-    localStorage.setItem('divePlans', JSON.stringify(divePlans));
-
-    // Reload saved plans
-    loadSavedPlans();
-
-    // Clear form
-    clearPlan();
-
-    // Show success message
-    alert('Dive plan saved successfully!');
 }
 
-// Load saved plans from localStorage
-function loadSavedPlans() {
-    const savedPlans = localStorage.getItem('divePlans');
-    if (savedPlans) {
-        divePlans = JSON.parse(savedPlans);
-    } else {
-        divePlans = [];
-    }
-
-    // Sort plans by date (newest first)
-    divePlans.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Render plans
-    renderSavedPlans();
+function collectLogEntryData() {
+    return {
+        site: document.getElementById('logEntrySite').value,
+        date: document.getElementById('logEntryDate').value,
+        depth: parseFloat(document.getElementById('logEntryDepth').value),
+        duration: parseFloat(document.getElementById('logEntryDuration').value),
+        temperature: parseFloat(document.getElementById('logEntryTemp').value) || null,
+        gasMix: document.getElementById('logEntryGasMix').value,
+        conditions: document.getElementById('logEntryConditions').value,
+        notes: document.getElementById('logEntryNotes').value
+    };
 }
 
-// Render saved plans
-function renderSavedPlans() {
-    savedPlansContainer.innerHTML = '';
+function updateSafetyCalculations() {
+    const depth = parseFloat(document.getElementById('maxDepth').value) || 0;
+    const gasMix = document.getElementById('gasMix').value;
+    const o2Percentage = gasMix === 'custom' ? 
+        (parseFloat(document.getElementById('customO2').value) || 21) :
+        gasMix === 'nitrox32' ? 32 : 
+        gasMix === 'nitrox36' ? 36 : 21;
 
-    if (divePlans.length === 0) {
-        noPlansMessage.classList.remove('hidden');
-        return;
-    }
+    const mod = divePlanner.calculateMOD(o2Percentage);
+    const ndl = divePlanner.calculateNDL(depth, gasMix);
 
-    noPlansMessage.classList.add('hidden');
-
-    divePlans.forEach(plan => {
-        const planEl = document.createElement('div');
-        planEl.className = 'bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition cursor-pointer';
-        planEl.innerHTML = `
-            <div class="flex justify-between items-start">
-                <div>
-                    <h4 class="font-bold text-blue-800">${plan.site}</h4>
-                    <div class="text-sm text-gray-500">${formatDate(plan.date)}</div>
-                </div>
-                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${plan.maxDepth}m / ${plan.duration}min</span>
-            </div>
-            <div class="mt-2 text-sm">
-                <span class="text-gray-600">Gas:</span> ${getGasMixLabel(plan.gasMix, plan.o2Percentage)}
-            </div>
-        `;
-
-        planEl.addEventListener('click', () => showPlanDetails(plan.id));
-        savedPlansContainer.appendChild(planEl);
-    });
+    document.getElementById('modResult').textContent = mod.toFixed(1) + ' m';
+    document.getElementById('ndlResult').textContent = ndl + ' min';
 }
 
-// Show plan details in modal
-function showPlanDetails(planId) {
-    const plan = divePlans.find(p => p.id === planId);
-    if (!plan) return;
-
-    // Set modal content
-    document.getElementById('detailSite').textContent = plan.site;
-    document.getElementById('detailDate').textContent = formatDate(plan.date);
-    document.getElementById('detailDepth').textContent = plan.maxDepth + ' m';
-    document.getElementById('detailDuration').textContent = plan.duration + ' min';
-    document.getElementById('detailGas').textContent = getGasMixLabel(plan.gasMix, plan.o2Percentage);
-    document.getElementById('detailNoDeco').textContent = plan.noDecoTime;
-    document.getElementById('detailSurface').textContent = plan.surfaceInterval;
-    document.getElementById('detailMod').textContent = plan.modDepth;
-    document.getElementById('detailSafety').textContent = plan.safetyStop;
-    document.getElementById('detailObjectives').textContent = plan.objectives || '--';
-    document.getElementById('detailNotes').textContent = plan.notes || '--';
-
-    // Set plan ID on buttons
-    document.getElementById('loadPlanBtn').dataset.planId = plan.id;
-    document.getElementById('deletePlanBtn').dataset.planId = plan.id;
-
-    // Show modal
-    planDetailsModal.classList.remove('hidden');
-
-    // Add event listeners to modal buttons
-    document.getElementById('loadPlanBtn').addEventListener('click', loadPlan);
-    document.getElementById('deletePlanBtn').addEventListener('click', deletePlan);
+function resetFilters() {
+    document.getElementById('logbookDateRange').value = 'all';
+    document.getElementById('logbookYearFilter').value = 'all';
+    document.getElementById('logbookMonthFilter').value = 'all';
+    document.getElementById('logbookSiteFilter').value = 'all';
+    document.getElementById('logbookGasMixFilter').value = 'all';
+    document.getElementById('customDateRange').style.display = 'none';
+    logbook.applyFilters();
 }
-
-// Load plan into form
-function loadPlan() {
-    const planId = this.dataset.planId;
-    const plan = divePlans.find(p => p.id === planId);
-    if (!plan) return;
-
-    // Set form values
-    diveSiteInput.value = plan.site;
-    diveDateInput.value = plan.date;
-    maxDepthInput.value = plan.maxDepth;
-    diveDurationInput.value = plan.duration;
-    waterTempInput.value = plan.waterTemp || '';
-
-    // Set gas mix
-    if (plan.gasMix === 'custom') {
-        gasMixSelect.value = 'custom';
-        customGasContainer.classList.remove('hidden');
-        customO2Input.value = plan.o2Percentage;
-    } else {
-        gasMixSelect.value = plan.gasMix;
-        customGasContainer.classList.add('hidden');
-    }
-
-    diveObjectivesInput.value = plan.objectives || '';
-    diveNotesInput.value = plan.notes || '';
-
-    // Set current plan ID
-    currentPlanId = plan.id;
-
-    // Set marker if location exists
-    if (marker) {
-        map.removeLayer(marker);
-        marker = null;
-    }
-
-    if (plan.location) {
-        marker = L.marker([plan.location.lat, plan.location.lng]).addTo(map);
-        map.setView([plan.location.lat, plan.location.lng], 12);
-    }
-
-    // Calculate safety parameters
-    calculateSafety();
-
-    // Close modal
-    closeModal('planDetailsModal');
-}
-
-// Delete plan
-function deletePlan() {
-    if (!confirm('Are you sure you want to delete this dive plan?')) return;
-
-    const planId = this.dataset.planId;
-    divePlans = divePlans.filter(p => p.id !== planId);
-
-    // Save to localStorage
-    localStorage.setItem('divePlans', JSON.stringify(divePlans));
-
-    // Reload saved plans
-    loadSavedPlans();
-
-    // Close modal
-    closeModal('planDetailsModal');
-
-    // If we deleted the currently loaded plan, clear the form
-    if (currentPlanId === planId) {
-        clearPlan();
-    }
-}
-
-// Close modal
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-}
-
-// Format date for display
-function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-}
-
-// Get gas mix label
-function getGasMixLabel(gasMix, o2Percentage) {
-    if (gasMix === 'air') return 'Air (21% O2)';
-    if (gasMix === 'nitrox32') return 'Nitrox 32';
-    if (gasMix === 'nitrox36') return 'Nitrox 36';
-    if (gasMix === 'custom') return `Custom (${o2Percentage}% O2)`;
-    return gasMix;
-}
-
-// Helper function to get gas mix label
-function getGasMixLabel(mix) {
-    switch (mix) {
-        case 'air':
-            return 'Air';
-        case 'nitrox32':
-            return 'Nitrox 32';
-        case 'nitrox36':
-            return 'Nitrox 36';
-        case 'custom':
-            return 'Custom Mix';
-        default:
-            return mix;
-    }
-}
-
-// Nitrox calculator
-function calculateNitrox() {
-    const o2Percentage = parseFloat(document.getElementById('nitroxO2').value) || 21;
-
-    // Calculate MOD (Maximum Operating Depth)
-    // MOD = ( (PpO2 / FO2) - 1 ) * 10
-    // Where PpO2 is the maximum partial pressure of O2 (typically 1.4 for recreational diving)
-    const mod = ((1.4 / (o2Percentage / 100)) - 1) * 10;
-    document.getElementById('modResult').value = mod.toFixed(1);
-
-    // Calculate EAD (Equivalent Air Depth)
-    // EAD = ( (1 - FO2) / 0.79 ) * (D + 10) - 10
-    const depth = parseFloat(document.getElementById('targetDepth').value) || 0;
-    if (depth > 0) {
-        const ead = ((1 - (o2Percentage / 100)) / 0.79) * (depth + 10) - 10;
-        document.getElementById('eadResult').value = ead.toFixed(1);
-    }
-}
-
-// Calculate best mix for target depth
-function calculateBestMix() {
-    const targetDepth = parseFloat(document.getElementById('targetDepth').value) || 0;
-    if (targetDepth <= 0) {
-        alert('Please enter a valid target depth');
-        return;
-    }
-
-    // Calculate required O2 percentage to stay within MOD at target depth
-    // FO2 = PpO2 / (D/10 + 1)
-    // Where PpO2 is the maximum partial pressure of O2 (typically 1.4 for recreational diving)
-    const maxO2 = (1.4 / (targetDepth / 10 + 1)) * 100;
-
-    if (maxO2 < 21) {
-        document.getElementById('bestMixResult').innerHTML = `
-            <span class="text-red-600">Target depth ${targetDepth}m exceeds MOD for air (21% O2). Consider using trimix.</span>
-        `;
-        return;
-    }
-
-    // Find standard Nitrox mix that's safe at this depth
-    let recommendedMix = 'Air (21% O2)';
-    if (maxO2 >= 32) {
-        recommendedMix = 'Nitrox 32';
-    } else if (maxO2 >= 28) {
-        recommendedMix = 'Custom mix (~28% O2)';
-    } else {
-        recommendedMix = `Custom mix (~${Math.floor(maxO2)}% O2)`;
-    }
-
-    document.getElementById('bestMixResult').innerHTML = `
-        <span class="text-green-700">Recommended gas: ${recommendedMix}</span><br>
-        <span class="text-sm text-gray-600">Maximum safe O2 percentage at ${targetDepth}m: ${maxO2.toFixed(1)}%</span>
-    `;
-
-    // Update MOD calculator with this O2 percentage
-    document.getElementById('nitroxO2').value = Math.min(40, Math.floor(maxO2));
-    calculateNitrox();
-}
-
-// No decompression limit calculator
-function calculateNDL() {
-    const depth = parseFloat(document.getElementById('ndlDepth').value) || 0;
-    const gasMix = document.getElementById('ndlGasMix').value;
-
-    if (depth <= 0) {
-        document.getElementById('ndlTime').textContent = '-- minutes';
-        return;
-    }
-
-    // Get O2 percentage based on gas mix
-    let o2Percentage = 21; // Default to air
-    if (gasMix === 'nitrox32') {
-        o2Percentage = 32;
-    } else if (gasMix === 'nitrox36') {
-        o2Percentage = 36;
-    }
-
-    // Calculate NDL (simplified)
-    let ndl = 0;
-    if (depth <= 12) {
-        ndl = 200; // Very long NDL for shallow dives
-    } else if (depth <= 18) {
-        ndl = 60;
-    } else if (depth <= 21) {
-        ndl = 45;
-    } else if (depth <= 24) {
-        ndl = 35;
-    } else if (depth <= 27) {
-        ndl = 25;
-    } else if (depth <= 30) {
-        ndl = 20;
-    } else if (depth <= 33) {
-        ndl = 15;
-    } else if (depth <= 36) {
-        ndl = 10;
-    } else {
-        ndl = 5; // Very short for deep dives
-    }
-
-    // Adjust NDL for Nitrox
-    if (o2Percentage > 21) {
-        // Nitrox extends NDL - simplified calculation
-        const airEAD = ((1 - (o2Percentage / 100)) / 0.79) * (depth + 10) - 10;
-        const airNdl = calculateAirNDL(airEAD);
-        ndl = Math.min(ndl * 1.5, airNdl * 1.5); // Cap the extension
-    }
-
-    document.getElementById('ndlTime').textContent = ndl.toFixed(0) + ' minutes';
-}
-
-// Safety stop timer setup
-function setupSafetyStopTimer() {
-    const timerDisplay = document.getElementById('safetyStopTimer');
-    const startStopBtn = document.getElementById('startStopBtn');
-    const resetStopBtn = document.getElementById('resetStopBtn');
-    const addMinuteBtn = document.getElementById('addMinuteBtn');
-
-    let timer;
-    let timeLeft = 180; // 3 minutes in seconds
-    let isRunning = false;
-
-    // Format time display
-    function formatTime(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    }
-
-    // Update timer display
-    function updateDisplay() {
-        timerDisplay.textContent = formatTime(timeLeft);
-
-        // Change color when time is running low
-        if (timeLeft <= 30) {
-            timerDisplay.classList.add('text-red-600');
-            timerDisplay.classList.remove('text-gray-900');
-        } else {
-            timerDisplay.classList.remove('text-red-600');
-            timerDisplay.classList.add('text-gray-900');
-        }
-    }
-
-    // Start or stop timer
-    startStopBtn.addEventListener('click', function () {
-        if (isRunning) {
-            // Stop timer
-            clearInterval(timer);
-            isRunning = false;
-            startStopBtn.innerHTML = '<i class="fas fa-play"></i> Start';
-            startStopBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
-            startStopBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-        } else {
-            // Start timer
-            isRunning = true;
-            startStopBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
-            startStopBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            startStopBtn.classList.add('bg-red-600', 'hover:bg-red-700');
-
-            timer = setInterval(function () {
-                timeLeft--;
-                updateDisplay();
-
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    isRunning = false;
-                    startStopBtn.innerHTML = '<i class="fas fa-play"></i> Start';
-                    startStopBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
-                    startStopBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-
-                    // Play alarm sound
-                    const alarm = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
-                    alarm.play();
-                }
-            }, 1000);
-        }
-    });
-
-    // Reset timer
-    resetStopBtn.addEventListener('click', function () {
-        clearInterval(timer);
-        isRunning = false;
-        timeLeft = 180;
-        updateDisplay();
-        startStopBtn.innerHTML = '<i class="fas fa-play"></i> Start';
-        startStopBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
-        startStopBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-    });
-
-    // Add minute
-    addMinuteBtn.addEventListener('click', function () {
-        timeLeft += 60;
-        updateDisplay();
-    });
-
-    // Initial display
-    updateDisplay();
-}
-
-// Logbook functionality
-let logbookEntries = [];
-let currentPage = 1;
-const entriesPerPage = 10;
-
-// Initialize logbook with sample data if empty
-function initializeLogbook() {
-    const savedEntries = localStorage.getItem('logbookEntries');
-    if (savedEntries) {
-        logbookEntries = JSON.parse(savedEntries);
-    } else {
-        // Add some sample entries
-        logbookEntries = [
-            {
-                site: "Blue Lagoon",
-                date: "2025-04-09",
-                depth: 18,
-                duration: 45,
-                temperature: 24,
-                gasMix: "air",
-                conditions: "Excellent visibility, light current",
-                notes: "Saw several sea turtles and a reef shark",
-                timestamp: new Date().getTime()
-            },
-            {
-                site: "Coral Garden",
-                date: "2025-04-08",
-                depth: 22,
-                duration: 50,
-                temperature: 23,
-                gasMix: "nitrox32",
-                conditions: "Moderate visibility, no current",
-                notes: "Beautiful coral formations",
-                timestamp: new Date().getTime() - 86400000
-            }
-        ];
-        saveLogbookEntries();
-    }
-    renderLogbookEntries();
-}
-
-// Render logbook entries
-function renderLogbookEntries() {
-    const logbookContainer = document.getElementById('logbookEntries');
-    logbookContainer.innerHTML = '';
-
-    // Apply filters
-    let filteredEntries = [...logbookEntries];
-
-    // Date range filter
-    const dateRange = document.getElementById('logbookDateRange').value;
-    if (dateRange !== 'all') {
-        const now = new Date();
-        let fromDate = new Date();
-
-        switch (dateRange) {
-            case 'today':
-                fromDate.setHours(0, 0, 0, 0);
-                break;
-            case 'yesterday':
-                fromDate.setDate(now.getDate() - 1);
-                fromDate.setHours(0, 0, 0, 0);
-                break;
-            case 'week':
-                fromDate.setDate(now.getDate() - 7);
-                break;
-            case 'twoweeks':
-                fromDate.setDate(now.getDate() - 14);
-                break;
-            case 'month':
-                fromDate.setMonth(now.getMonth() - 1);
-                break;
-            case '3months':
-                fromDate.setMonth(now.getMonth() - 3);
-                break;
-            case '6months':
-                fromDate.setMonth(now.getMonth() - 6);
-                break;
-            case 'year':
-                fromDate.setFullYear(now.getFullYear() - 1);
-                break;
-            case 'custom':
-                const customFrom = document.getElementById('logbookDateFrom').value;
-                const customTo = document.getElementById('logbookDateTo').value;
-                if (customFrom && customTo) {
-                    filteredEntries = filteredEntries.filter(entry => 
-                        entry.date >= customFrom && entry.date <= customTo
-                    );
-                }
-                break;
-        }
-        if (dateRange !== 'custom') {
-            filteredEntries = filteredEntries.filter(entry => 
-                new Date(entry.date) >= fromDate
-            );
-        }
-    }
-
-    // Year/Month filter
-    const yearFilter = document.getElementById('logbookYearFilter').value;
-    const monthFilter = document.getElementById('logbookMonthFilter').value;
-    
-    if (yearFilter !== 'all') {
-        filteredEntries = filteredEntries.filter(entry => 
-            new Date(entry.date).getFullYear().toString() === yearFilter
-        );
-    }
-    
-    if (monthFilter !== 'all') {
-        filteredEntries = filteredEntries.filter(entry => 
-            (new Date(entry.date).getMonth() + 1).toString() === monthFilter
-        );
-    }
-
-    // Site filter
-    const siteFilter = document.getElementById('logbookSiteFilter').value.toLowerCase();
-    if (siteFilter !== 'all') {
-        filteredEntries = filteredEntries.filter(entry => 
-            entry.site.toLowerCase().includes(siteFilter)
-        );
-    }
-
-    // Depth range filter
-    const depthMin = parseFloat(document.getElementById('logbookDepthMin').value);
-    const depthMax = parseFloat(document.getElementById('logbookDepthMax').value);
-    if (!isNaN(depthMin)) {
-        filteredEntries = filteredEntries.filter(entry => entry.depth >= depthMin);
-    }
-    if (!isNaN(depthMax)) {
-        filteredEntries = filteredEntries.filter(entry => entry.depth <= depthMax);
-    }
-
-    // Duration range filter
-    const durationMin = parseFloat(document.getElementById('logbookDurationMin').value);
-    const durationMax = parseFloat(document.getElementById('logbookDurationMax').value);
-    if (!isNaN(durationMin)) {
-        filteredEntries = filteredEntries.filter(entry => entry.duration >= durationMin);
-    }
-    if (!isNaN(durationMax)) {
-        filteredEntries = filteredEntries.filter(entry => entry.duration <= durationMax);
-    }
-
-    // Gas mix filter
-    const gasMixFilter = document.getElementById('logbookGasMixFilter').value;
-    if (gasMixFilter !== 'all') {
-        filteredEntries = filteredEntries.filter(entry => entry.gasMix === gasMixFilter);
-    }
-
-    // Sort by date (newest first)
-    filteredEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Pagination
-    const startIndex = (currentPage - 1) * entriesPerPage;
-    const endIndex = startIndex + entriesPerPage;
-    const paginatedEntries = filteredEntries.slice(startIndex, endIndex);
-
-    // Update pagination info
-    document.getElementById('entriesShown').textContent = 
-        `${startIndex + 1}-${Math.min(endIndex, filteredEntries.length)}`;
-    document.getElementById('totalEntries').textContent = filteredEntries.length;
-
-    // Enable/disable pagination buttons
-    document.getElementById('prevPageBtn').disabled = currentPage === 1;
-    document.getElementById('nextPageBtn').disabled = endIndex >= filteredEntries.length;
-
-    // Populate site filter dropdown with unique sites
-    const siteSelect = document.getElementById('logbookSiteFilter');
-    if (siteSelect.options.length <= 1) {
-        const uniqueSites = [...new Set(logbookEntries.map(entry => entry.site))].sort();
-        uniqueSites.forEach(site => {
-            const option = document.createElement('option');
-            option.value = site;
-            option.textContent = site;
-            siteSelect.appendChild(option);
-        });
-    }
-
-    // Populate year filter with unique years
-    const yearSelect = document.getElementById('logbookYearFilter');
-    if (yearSelect.options.length <= 1) {
-        const uniqueYears = [...new Set(logbookEntries.map(entry => 
-            new Date(entry.date).getFullYear()
-        ))].sort().reverse();
-        uniqueYears.forEach(year => {
-            const option = document.createElement('option');
-            option.value = year.toString();
-            option.textContent = year.toString();
-            yearSelect.appendChild(option);
-        });
-    }
-
-    // Render entries
-    if (paginatedEntries.length === 0) {
-        logbookContainer.innerHTML = `
-            <div class="text-center py-8 text-gray-500">
-                <i class="fas fa-book text-4xl mb-2"></i>
-                <p>No dive logs found</p>
-                <p class="text-sm mt-2">Click the "+ New Entry" button to add your first dive log</p>
-            </div>
-        `;
-        return;
-    }
-
-    paginatedEntries.forEach((entry, index) => {
-        const entryElement = document.createElement('div');
-        entryElement.className = 'log-entry bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-300 mb-4';
-        
-        entryElement.innerHTML = `
-            <div class="flex justify-between items-start">
-                <div>
-                    <h4 class="text-xl font-bold text-blue-900">${entry.site}</h4>
-                    <p class="text-sm text-gray-500">${formatDate(entry.date)}</p>
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="editLogbookEntry(${JSON.stringify(entry)}, ${startIndex + index})" 
-                            class="bg-blue-100 hover:bg-blue-200 text-blue-600 px-3 py-1 rounded-lg text-sm">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="removeLogbookEntry(${startIndex + index})" 
-                            class="bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1 rounded-lg text-sm">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                <div>
-                    <span class="text-sm text-gray-500">Max Depth</span>
-                    <p class="font-semibold">${entry.depth} m</p>
-                </div>
-                <div>
-                    <span class="text-sm text-gray-500">Duration</span>
-                    <p class="font-semibold">${entry.duration} min</p>
-                </div>
-                <div>
-                    <span class="text-sm text-gray-500">Water Temp</span>
-                    <p class="font-semibold">${entry.temperature ? entry.temperature + '°C' : '--'}</p>
-                </div>
-                <div>
-                    <span class="text-sm text-gray-500">Gas Mix</span>
-                    <p class="font-semibold">${getGasMixLabel(entry.gasMix)}</p>
-                </div>
-            </div>
-            
-            ${entry.conditions ? `
-                <div class="mt-4">
-                    <span class="text-sm text-gray-500">Conditions</span>
-                    <p class="text-gray-700">${entry.conditions}</p>
-                </div>
-            ` : ''}
-            
-            ${entry.notes ? `
-                <div class="mt-4">
-                    <span class="text-sm text-gray-500">Notes</span>
-                    <p class="text-gray-700">${entry.notes}</p>
-                </div>
-            ` : ''}
-        `;
-        
-        logbookContainer.appendChild(entryElement);
-    });
-}
-
-// Add new logbook entry
-function addLogbookEntry(entry) {
-    // Add timestamp to entry
-    entry.timestamp = new Date().getTime();
-    
-    // Validate required fields
-    if (!entry.site || !entry.date || !entry.depth || !entry.duration) {
-        alert('Please fill in all required fields');
-        return;
-    }
-
-    logbookEntries.push(entry);
-    saveLogbookEntries();
-    renderLogbookEntries();
-}
-
-// Save logbook entries to localStorage
-function saveLogbookEntries() {
-    localStorage.setItem('logbookEntries', JSON.stringify(logbookEntries));
-}
-
-// Add functionality to remove logbook entries
-function removeLogbookEntry(index) {
-    if (confirm('Are you sure you want to delete this logbook entry?')) {
-        logbookEntries.splice(index, 1); // Remove the entry from the array
-        saveLogbookEntries(); // Save the updated logbook entries
-        renderLogbookEntries(); // Re-render the logbook entries
-    }
-}
-
-// Edit logbook entry
-function editLogbookEntry(entry, index) {
-    // Populate the modal with entry data
-    document.getElementById('logEntrySite').value = entry.site;
-    document.getElementById('logEntryDate').value = entry.date;
-    document.getElementById('logEntryDepth').value = entry.depth;
-    document.getElementById('logEntryDuration').value = entry.duration;
-    document.getElementById('logEntryTemp').value = entry.temperature || '';
-    document.getElementById('logEntryGasMix').value = entry.gasMix;
-    document.getElementById('logEntryConditions').value = entry.conditions || '';
-    document.getElementById('logEntryNotes').value = entry.notes || '';
-
-    // Set the update index on the save button
-    const saveBtn = document.getElementById('saveLogEntryBtn');
-    saveBtn.dataset.updateIndex = index;
-    saveBtn.textContent = 'Update Entry';
-
-    // Show the modal
-    document.getElementById('newLogEntryModal').classList.remove('hidden');
-}
-
-// Pagination controls
-function goToNextPage() {
-    currentPage++;
-    renderLogbookEntries();
-}
-
-function goToPrevPage() {
-    if (currentPage > 1) {
-        currentPage--;
-        renderLogbookEntries();
-    }
-}
-
-// Add event listeners for pagination
-document.getElementById('prevPageBtn').addEventListener('click', goToPrevPage);
-document.getElementById('nextPageBtn').addEventListener('click', goToNextPage);
-
-// Update range slider fill
-function updateRangeSliderFill(slider, otherSlider, isMin) {
-    const percent = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-    const otherPercent = (otherSlider.value - otherSlider.min) / (otherSlider.max - otherSlider.min) * 100;
-    
-    const parent = slider.closest('.multi-range');
-    if (isMin) {
-        parent.style.setProperty('--start', `${Math.min(percent, otherPercent)}%`);
-        parent.style.setProperty('--end', `${100 - Math.max(percent, otherPercent)}%`);
-    } else {
-        parent.style.setProperty('--start', `${Math.min(percent, otherPercent)}%`);
-        parent.style.setProperty('--end', `${100 - Math.max(percent, otherPercent)}%`);
-    }
-}
-
-// Add event listeners for the range sliders
-document.addEventListener('DOMContentLoaded', function() {
-    const depthMin = document.getElementById('logbookDepthMin');
-    const depthMax = document.getElementById('logbookDepthMax');
-    const durationMin = document.getElementById('logbookDurationMin');
-    const durationMax = document.getElementById('logbookDurationMax');
-    
-    // Initialize depth range fill
-    updateRangeSliderFill(depthMin, depthMax, true);
-    updateRangeSliderFill(depthMax, depthMin, false);
-    
-    // Initialize duration range fill
-    updateRangeSliderFill(durationMin, durationMax, true);
-    updateRangeSliderFill(durationMax, durationMin, false);
-    
-    // Add event listeners for depth range
-    depthMin.addEventListener('input', () => {
-        updateRangeSliderFill(depthMin, depthMax, true);
-        document.getElementById('depthValue').textContent = `${depthMin.value}m - ${depthMax.value}m`;
-    });
-    
-    depthMax.addEventListener('input', () => {
-        updateRangeSliderFill(depthMax, depthMin, false);
-        document.getElementById('depthValue').textContent = `${depthMin.value}m - ${depthMax.value}m`;
-    });
-    
-    // Add event listeners for duration range
-    durationMin.addEventListener('input', () => {
-        updateRangeSliderFill(durationMin, durationMax, true);
-        document.getElementById('durationValue').textContent = `${durationMin.value}min - ${durationMax.value}min`;
-    });
-    
-    durationMax.addEventListener('input', () => {
-        updateRangeSliderFill(durationMax, durationMin, false);
-        document.getElementById('durationValue').textContent = `${durationMin.value}min - ${durationMax.value}min`;
-    });
-    
-    // Initialize logbook
-    initializeLogbook();
-    
-    // Set today's date as default for new entries
-    const todayInput = document.getElementById('logEntryDate');
-    if (todayInput) {
-        todayInput.value = new Date().toISOString().split('T')[0];
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all components
-    initializeChecklist();
-    loadSavedPlans();
-    initDiveProfileChart();
-    setupSafetyStopTimer();
-    setupDragAndDrop();
-    initializeLogbook();
-
-    // ...existing code...
-});

@@ -1,54 +1,71 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
 
 :root {
-    --primary: #006994;
-    --secondary: #00A0C6;
-    --accent: #FF9F1C;
-    --dark: #022B3A;
-    --light: #E1F5FE;
+    /* Variables de base */
+    --bs-primary: #006994;
+    --bs-secondary: #00A0C6;
+    --bs-warning: #FF9F1C;
+    --bs-dark: #022B3A;
+    --bs-light: #E1F5FE;
+    
+    --bg-color: #f0f9ff;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --input-text: #333333;
+    --modal-bg: #ffffff;
+    --hover-bg: rgba(0, 105, 148, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.15);
 }
 
 body {
     font-family: 'Open Sans', sans-serif;
-    background-color: #f0f9ff;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-y: auto !important;
+    position: relative !important;
 }
 
-h1,
-h2,
-h3,
-h4,
-.nav-item {
+h1, h2, h3, h4, .nav-link {
     font-family: 'Barlow Condensed', sans-serif;
 }
 
+/* Wave Background */
 .wave-bg {
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 100px;
-    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="%23006994" opacity=".25"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" fill="%23006994" opacity=".5"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,236.83-84.81V0Z" fill="%23006994"/></svg>');
-    background-size: cover;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(0, 105, 148, 0.03) 0%, rgba(0, 105, 148, 0) 100%);
     z-index: -1;
 }
 
-.dive-card {
+/* Card Animations */
+.card {
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 105, 148, 0.1);
 }
 
-.dive-card:hover {
+.card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 105, 148, 0.2);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
 }
 
-.tab-content {
+/* Tab Content Animations */
+.tab-pane {
+    opacity: 0;
     display: none;
+    transition: opacity 0.3s ease;
 }
 
-.tab-content.active {
+.tab-pane.show {
     display: block;
-    animation: fadeIn 0.5s ease;
+}
+
+.tab-pane.active {
+    opacity: 1;
 }
 
 @keyframes fadeIn {
@@ -56,116 +73,67 @@ h4,
         opacity: 0;
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-.progress-ring__circle {
-    transition: stroke-dashoffset 0.5s;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
+/* Checklist Item Styles */
+.checklist-item {
+    transition: all 0.2s ease;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+}
+
+.checklist-item:hover {
+    transform: translateX(4px);
 }
 
 .checklist-item.checked {
-    background-color: #f0fdf4;
-    border-left: 4px solid #10b981;
+    background-color: var(--bs-success-bg-subtle);
+    border-color: var(--bs-success-border-subtle);
 }
 
-.depth-gauge {
-    background: linear-gradient(to bottom, #0077be, #00a0c6, #00c2d6);
+/* Custom Scrollbars */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-gray-500) var(--bs-gray-200);
 }
 
-/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+    background: var(--bs-gray-200);
+    border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
+    background: var(--bs-gray-500);
+    border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: var(--bs-gray-600);
 }
 
-/* Drag and drop styling */
+/* Drag and Drop Styles */
 .checklist-item.dragging {
     opacity: 0.5;
-    background-color: #f0f9ff;
+    background-color: var(--bs-gray-100);
 }
 
 .checklist-item.over {
-    border-top: 2px solid #3b82f6;
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
 }
 
-/* Animation for checklist items */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.checklist-item {
-    animation: slideIn 0.3s ease forwards;
-}
-
-/* Pulse animation for save button */
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.05);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-.pulse {
-    animation: pulse 0.5s ease;
-}
-
-/* Dive planner specific */
-.dive-plan-card {
-    border-left: 4px solid var(--primary);
-}
-
-/* Map container */
-#diveMap {
-    height: 300px;
-    border-radius: 0.75rem;
-    z-index: 0;
-}
-
-/* Analysis chart container */
-.chart-container {
-    position: relative;
-    height: 300px;
-    width: 100%;
-}
-
-/* Logbook entry */
+/* Logbook specific styles */
 .log-entry {
-    border-left: 4px solid var(--secondary);
+    border-left: 4px solid var(--bs-primary);
     transition: all 0.3s ease;
 }
 
@@ -173,7 +141,7 @@ h4,
     transform: translateX(5px);
 }
 
-/* Tool card */
+/* Tool Cards */
 .tool-card {
     transition: all 0.3s ease;
 }
@@ -182,181 +150,260 @@ h4,
     transform: scale(1.03);
 }
 
-/* No deco time gauge */
-.no-deco-gauge {
-    background: conic-gradient(#10b981 0% 100%, #e5e7eb 100% 100%);
-}
-
-/* Nitrox calculator */
-.nitrox-calculator {
-    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-}
-
-/* Safety stop timer */
-.safety-stop {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-}
-
-/* Range slider styling */
-.range-slider-container {
+/* Charts and Maps */
+.chart-container {
     position: relative;
-    padding: 1rem 0;
-}
-
-.range-slider {
-    -webkit-appearance: none;
-    appearance: none;
+    height: 300px;
     width: 100%;
-    height: 4px;
-    background: #e2e8f0;
-    border-radius: 2px;
-    outline: none;
+    margin: 1rem 0;
 }
 
-.range-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--primary);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s ease;
+#diveMap {
+    height: 300px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 0;
+    transition: all 0.3s ease;
 }
 
-.range-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    background: var(--secondary);
+#diveMap:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.range-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: var(--primary);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s ease;
+/* Modal animations */
+.modal.fade .modal-dialog {
+    transition: transform .3s ease-out;
+    transform: scale(0.95);
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+}
+
+/* Custom form styles */
+.form-control:focus, .form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(0, 105, 148, 0.25);
+}
+
+.form-control:focus {
+    border-color: #006994;
+    box-shadow: 0 0 0 0.2rem rgba(0, 105, 148, 0.25);
+}
+
+.form-text.text-danger {
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+/* Custom button styles */
+.btn-primary {
+    background-color: #2563eb;
     border: none;
+    color: white;
+    transition: all 0.3s ease;
 }
 
-.range-slider::-moz-range-thumb:hover {
-    transform: scale(1.2);
-    background: var(--secondary);
+.btn-primary:hover {
+    background-color: #1d4ed8;
+    color: white;
 }
 
-.range-values {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
+/* Navigation pills custom style */
+.nav-pills .nav-link {
+    color: var(--bs-primary);
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0.75rem 1.25rem;
+    white-space: nowrap;
+    margin-right: 0.5rem; /* Ajout de la marge à droite */
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--bs-primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 105, 148, 0.2);
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background-color: rgba(0, 105, 148, 0.1);
+}
+
+/* Enable scrolling */
+.container {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Import/Export modal styles */
+#importSection.hidden,
+#exportSection.hidden,
+#confirmImportBtn.hidden {
+    display: none;
+}
+
+/* Modal section visibility */
+#importSection.d-none,
+#exportSection.d-none,
+#confirmImportBtn.d-none {
+    display: none !important;
+}
+
+/* Modal textarea styles */
+#checklistData,
+#importChecklistData {
+    font-family: monospace;
     font-size: 0.875rem;
-    color: #64748b;
+    resize: vertical;
+    white-space: pre;
+    min-height: 200px;
 }
 
-/* Dual-handle range slider styling */
-.multi-range {
-    position: relative;
-    height: 16px;
-    margin: 16px 0;
+#checklistData,
+#importChecklistData {
+    font-family: monospace;
+    resize: vertical;
+    white-space: pre;
 }
 
-/* Base track styles */
-.range-track {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 4px;
-    background-color: #e2e8f0;
-    border-radius: 2px;
-    z-index: 1;
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999; /* Augmentation du z-index pour être sûr qu'il est au-dessus de tout */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-/* Active range fill */
-.multi-range::before {
-    content: '';
-    position: absolute;
-    left: var(--start, 0%);
-    right: var(--end, 0%);
-    top: 50%;
-    transform: translateY(-50%);
-    height: 4px;
-    background-color: #006994;
-    border-radius: 2px;
-    z-index: 2;
-    pointer-events: none;
+.toast {
+    min-width: 250px;
+    padding: 15px;
+    border-radius: 4px;
+    color: white;
+    animation: slideIn 0.3s ease-in-out, fadeOut 0.5s ease-in-out 2.5s forwards;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Slider input styling */
-.multi-range-slider {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 16px;
+.toast.success {
+    background-color: #10B981;
+}
+
+.toast.error {
+    background-color: #EF4444;
+}
+
+.toast.warning {
+    background-color: #F59E0B;
+}
+
+.toast.info {
+    background-color: #3B82F6;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Styles pour le formulaire par étapes */
+.step-content {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease-in-out;
+}
+
+.step-content.active {
     opacity: 1;
-    z-index: 3;
-    cursor: pointer;
+    transform: translateY(0);
 }
 
-.multi-range-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #006994;
-    border: 2px solid #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    cursor: pointer;
-    pointer-events: all;
-    position: relative;
-    z-index: 5;
-}
-
-.multi-range-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #006994;
-    border: 2px solid #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    cursor: pointer;
-    pointer-events: all;
-    position: relative;
-    z-index: 5;
-}
-
-.multi-range-slider::-webkit-slider-runnable-track {
+.progress {
     height: 4px;
-    background: transparent;
+    background-color: #e9ecef;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-.multi-range-slider::-moz-range-track {
-    height: 4px;
-    background: transparent;
+.progress-bar {
+    transition: width 0.3s ease;
 }
 
-/* Make the range inputs visible but not interfere with clicking */
-.multi-range-slider.overlap {
-    pointer-events: none;
+/* Styles pour les boutons d'étape */
+.next-step:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.multi-range-slider.overlap::-webkit-slider-thumb {
-    pointer-events: auto;
+/* Styles pour les cartes de plan sauvegardées */
+.card.cursor-pointer {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.multi-range-slider.overlap::-moz-range-thumb {
-    pointer-events: auto;
+.card.cursor-pointer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.multi-range-slider.ghost {
-    pointer-events: none;
+/* Styles pour les indicateurs d'étape */
+.text-primary {
+    color: #006994 !important;
 }
 
-.multi-range-slider.ghost::-webkit-slider-thumb {
-    pointer-events: auto;
+.bg-primary {
+    background-color: #006994 !important;
 }
 
-.multi-range-slider.ghost::-moz-range-thumb {
-    pointer-events: auto;
+/* Amélioration de l'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+    .step-content,
+    .progress-bar,
+    .card.cursor-pointer {
+        transition: none;
+    }
+}
+
+/* Styles de base pour les composants */
+.card {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+    color: var(--text-color);
+    box-shadow: 0 0.125rem 0.25rem var(--shadow-color);
+}
+
+.modal-content {
+    background-color: var(--modal-bg);
+    border-color: var(--card-border);
+}
+
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-text);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    border-color: var(--bs-primary);
+    color: var(--input-text);
 }

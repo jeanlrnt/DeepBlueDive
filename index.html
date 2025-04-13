@@ -5,328 +5,380 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeepBlue Dive Companion</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="min-h-screen relative overflow-x-hidden">
+<body class="min-vh-100 position-relative">
     <div class="wave-bg"></div>
 
-    <div class="container mx-auto px-4 py-8">
+    <div class="container py-4">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-8">
-            <div class="flex items-center">
-                <i class="fas fa-water text-4xl mr-3 text-blue-600"></i>
-                <h1 class="text-3xl font-bold text-blue-900">DeepBlue<span class="text-blue-600">Dive</span></h1>
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-water fs-1 me-3 text-primary"></i>
+                <h1 class="fs-2 fw-bold text-dark">DeepBlue<span class="text-primary">Dive</span></h1>
             </div>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
+            <div class="d-flex align-items-center gap-3">
+                <div class="position-relative">
                     <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User"
-                        class="w-10 h-10 rounded-full border-2 border-blue-300">
-                    <span
-                        class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                        class="rounded-circle border border-2 border-primary" style="width: 40px; height: 40px;">
+                    <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white"
+                        style="width: 12px; height: 12px;"></span>
                 </div>
-                <span class="font-semibold text-blue-900">Sarah Diver</span>
+                <span class="fw-semibold text-dark">Sarah Diver</span>
             </div>
         </header>
 
         <!-- Main Content -->
         <main>
             <!-- Dashboard Overview -->
-            <section class="mb-10">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-white rounded-xl shadow-md p-4 flex items-center">
-                        <div class="p-3 rounded-full bg-blue-100 mr-4">
-                            <i class="fas fa-flag text-blue-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Dives</p>
-                            <h3 class="text-2xl font-bold text-blue-900">127</h3>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-md p-4 flex items-center">
-                        <div class="p-3 rounded-full bg-green-100 mr-4">
-                            <i class="fas fa-clock text-green-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Last Dive</p>
-                            <h3 class="text-2xl font-bold text-blue-900">42 min</h3>
+            <section class="mb-5">
+                <div class="row row-cols-1 row-cols-md-4 g-4 mb-4">
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-flag text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted mb-1 small">Total Dives</p>
+                                    <h3 class="fs-4 fw-bold text-dark mb-0">127</h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-md p-4 flex items-center">
-                        <div class="p-3 rounded-full bg-purple-100 mr-4">
-                            <i class="fas fa-ruler-vertical text-purple-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Max Depth</p>
-                            <h3 class="text-2xl font-bold text-blue-900">28.6m</h3>
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-clock text-success fs-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted mb-1 small">Last Dive</p>
+                                    <h3 class="fs-4 fw-bold text-dark mb-0">42 min</h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-md p-4 flex items-center">
-                        <div class="p-3 rounded-full bg-yellow-100 mr-4">
-                            <i class="fas fa-temperature-low text-yellow-600 text-xl"></i>
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-info bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-ruler-vertical text-info fs-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted mb-1 small">Max Depth</p>
+                                    <h3 class="fs-4 fw-bold text-dark mb-0">28.6m</h3>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Water Temp</p>
-                            <h3 class="text-2xl font-bold text-blue-900">24°C</h3>
+                    </div>
+
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="bg-warning bg-opacity-10 p-3 rounded-circle me-3">
+                                    <i class="fas fa-temperature-low text-warning fs-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-muted mb-1 small">Water Temp</p>
+                                    <h3 class="fs-4 fw-bold text-dark mb-0">24°C</h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Tab Navigation -->
-            <section class="mb-8">
-                <div class="flex overflow-x-auto pb-2 mb-6 scrollbar-hide">
-                    <button onclick="openTab(event, 'checklist')"
-                        class="tab-button flex-shrink-0 px-6 py-2 mr-2 rounded-full bg-blue-600 text-white font-medium flex items-center">
-                        <i class="fas fa-clipboard-check mr-2"></i> Checklist
-                    </button>
-                    <button onclick="openTab(event, 'planner')"
-                        class="tab-button flex-shrink-0 px-6 py-2 mr-2 rounded-full bg-white text-blue-600 border border-blue-200 font-medium flex items-center">
-                        <i class="fas fa-map-marked-alt mr-2"></i> Dive Planner
-                    </button>
-                    <button onclick="openTab(event, 'analysis')"
-                        class="tab-button flex-shrink-0 px-6 py-2 mr-2 rounded-full bg-white text-blue-600 border border-blue-200 font-medium flex items-center">
-                        <i class="fas fa-chart-line mr-2"></i> Analysis
-                    </button>
-                    <button onclick="openTab(event, 'logbook')"
-                        class="tab-button flex-shrink-0 px-6 py-2 mr-2 rounded-full bg-white text-blue-600 border border-blue-200 font-medium flex items-center">
-                        <i class="fas fa-book mr-2"></i> Logbook
-                    </button>
-                    <button onclick="openTab(event, 'tools')"
-                        class="tab-button flex-shrink-0 px-6 py-2 rounded-full bg-white text-blue-600 border border-blue-200 font-medium flex items-center">
-                        <i class="fas fa-tools mr-2"></i> Tools
-                    </button>
-                </div>
+            <section class="mb-4">
+                <ul class="nav nav-pills mb-4 overflow-x-auto flex-nowrap" id="mainTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button type="button" data-tab="checklist" class="nav-link active d-flex align-items-center" role="tab" aria-selected="true" aria-controls="checklist">
+                            <i class="fas fa-clipboard-check me-2"></i> Checklist
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" data-tab="planner" class="nav-link d-flex align-items-center" role="tab" aria-selected="false" aria-controls="planner">
+                            <i class="fas fa-map-marked-alt me-2"></i> Dive Planner
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" data-tab="analysis" class="nav-link d-flex align-items-center" role="tab" aria-selected="false" aria-controls="analysis">
+                            <i class="fas fa-chart-line me-2"></i> Analysis
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" data-tab="logbook" class="nav-link d-flex align-items-center" role="tab" aria-selected="false" aria-controls="logbook">
+                            <i class="fas fa-book me-2"></i> Logbook
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button type="button" data-tab="tools" class="nav-link d-flex align-items-center" role="tab" aria-selected="false" aria-controls="tools">
+                            <i class="fas fa-tools me-2"></i> Tools
+                        </button>
+                    </li>
+                </ul>
 
                 <!-- Tab Contents -->
-                <div id="checklist" class="tab-content active">
-                    <div class="bg-white rounded-xl shadow-md p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-blue-900">Pre-Dive Equipment Checklist</h2>
-                            <div class="flex items-center space-x-3">
-                                <button id="newCategoryBtn"
-                                    class="bg-blue-100 hover:bg-blue-200 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                    <i class="fas fa-plus-circle mr-2"></i> New Category
-                                </button>
-                                <button id="newItemBtn"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                    <i class="fas fa-plus mr-2"></i> New Item
-                                </button>
-                                <button id="saveChecklistBtn"
-                                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                    <i class="fas fa-save mr-2"></i> Save
-                                </button>
-                            </div>
-                        </div>
+                <div class="tab-content" id="mainTabsContent">
+                    <div id="checklist" class="tab-pane fade show active">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h2 class="h4 fw-bold text-dark mb-0">Pre-Dive Equipment Checklist</h2>
+                                    <div class="d-flex gap-3">
+                                        <button id="newCategoryBtn" class="btn btn-outline-primary d-flex align-items-center">
+                                            <i class="fas fa-plus-circle me-2"></i> New Category
+                                        </button>
+                                        <button id="newItemBtn" class="btn btn-primary d-flex align-items-center">
+                                            <i class="fas fa-plus me-2"></i> New Item
+                                        </button>
+                                        <button id="saveChecklistBtn" class="btn btn-success d-flex align-items-center">
+                                            <i class="fas fa-save me-2"></i> Save
+                                        </button>
+                                    </div>
+                                </div>
 
-                        <div id="checklistContainer" class="custom-scrollbar max-h-[600px] overflow-y-auto pr-2">
-                            <!-- Checklist categories will be loaded here -->
-                        </div>
+                                <div id="checklistContainer" class="overflow-auto custom-scrollbar pe-2" style="max-height: 600px;">
+                                    <!-- Checklist categories will be loaded here -->
+                                </div>
 
-                        <div class="flex justify-between items-center pt-4 border-t mt-4">
-                            <div>
-                                <span class="text-sm text-gray-500">Completion:</span>
-                                <span id="completionCount" class="font-bold ml-2">0/0</span>
-                                <span id="completionPercentage" class="text-sm text-gray-500 ml-2">(0%)</span>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button id="resetChecklistBtn"
-                                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
-                                    <i class="fas fa-undo mr-1"></i> Reset
-                                </button>
-                                <button id="exportChecklistBtn"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                                    <i class="fas fa-file-export mr-1"></i> Export
-                                </button>
-                                <button id="importChecklistBtn"
-                                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                                    <i class="fas fa-file-import mr-1"></i> Import
-                                </button>
+                                <div class="d-flex justify-content-between align-items-center pt-4 border-top mt-4">
+                                    <div>
+                                        <span class="text-muted small">Completion:</span>
+                                        <span id="completionCount" class="fw-bold ms-2">0/0</span>
+                                        <span id="completionPercentage" class="text-muted small ms-2">(0%)</span>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button id="resetChecklistBtn" class="btn btn-light">
+                                            <i class="fas fa-undo me-1"></i> Reset
+                                        </button>
+                                        <button id="exportChecklistBtn" class="btn btn-primary">
+                                            <i class="fas fa-file-export me-1"></i> Export
+                                        </button>
+                                        <button id="importChecklistBtn" class="btn btn-secondary">
+                                            <i class="fas fa-file-import me-1"></i> Import
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Dive Planner Tab -->
-                <div id="planner" class="tab-content">
-                    <div class="bg-white rounded-xl shadow-md p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-blue-900">Dive Planner</h2>
-                            <button id="newDivePlanBtn"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                <i class="fas fa-plus mr-2"></i> New Dive Plan
-                            </button>
-                        </div>
+                <div id="planner" class="tab-pane fade">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="h4 fw-bold text-dark mb-0">Dive Planner</h2>
+                                <button id="newDivePlanBtn" class="btn btn-primary d-flex align-items-center">
+                                    <i class="fas fa-plus me-2"></i> New Dive Plan
+                                </button>
+                            </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Dive Plan Form -->
-                            <div class="md:col-span-2">
-                                <div class="bg-white rounded-xl shadow-md p-6">
-                                    <h3 class="text-lg font-semibold text-blue-800 mb-4">Plan Your Dive</h3>
+                            <div class="row g-4">
+                                <!-- Dive Plan Form -->
+                                <div class="col-md-8">
+                                    <div class="card shadow-sm mb-4">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Plan Your Dive</h3>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Dive
-                                                Site</label>
-                                            <input type="text" id="diveSite"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. Blue Hole">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                                            <input type="date" id="diveDate"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                                        </div>
-                                    </div>
+                                            <!-- Champs cachés pour les coordonnées -->
+                                            <input type="hidden" id="diveLat">
+                                            <input type="hidden" id="diveLng">
 
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Max Depth
-                                                (m)</label>
-                                            <input type="number" id="maxDepth"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 18" min="1" max="60">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Duration
-                                                (min)</label>
-                                            <input type="number" id="diveDuration"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 45" min="5" max="180">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Water Temp
-                                                (°C)</label>
-                                            <input type="number" id="waterTemp"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 24" min="0" max="40">
-                                        </div>
-                                    </div>
+                                            <!-- Progress Steps -->
+                                            <div class="progress mb-4" style="height: 4px;">
+                                                <div id="planProgress" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-4 text-muted small">
+                                                <span id="step1" class="fw-bold text-primary">1. Site</span>
+                                                <span id="step2">2. Paramètres</span>
+                                                <span id="step3">3. Gaz</span>
+                                                <span id="step4">4. Objectifs</span>
+                                            </div>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Gas Mix</label>
-                                            <select id="gasMix"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                                                <option value="air">Air (21% O2)</option>
-                                                <option value="nitrox32">Nitrox 32</option>
-                                                <option value="nitrox36">Nitrox 36</option>
-                                                <option value="custom">Custom Mix</option>
-                                            </select>
+                                            <!-- Step 1: Site Information -->
+                                            <div id="siteStep" class="step-content active">
+                                                <div class="row g-3 mb-4">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Dive Site</label>
+                                                        <input type="text" id="diveSite" class="form-control" placeholder="e.g. Blue Hole">
+                                                        <div id="siteFeedback" class="form-text text-danger"></div>
+                                                        <div class="form-text">Click on the map to select location</div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Date</label>
+                                                        <input type="date" id="diveDate" class="form-control">
+                                                        <div id="dateFeedback" class="form-text text-danger"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="text-end">
+                                                    <button class="btn btn-primary next-step">Next</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Step 2: Dive Parameters -->
+                                            <div id="paramsStep" class="step-content d-none">
+                                                <div class="row g-3 mb-4">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Max Depth (m)</label>
+                                                        <input type="number" id="maxDepth" class="form-control" placeholder="e.g. 18" min="1" max="60">
+                                                        <div id="depthFeedback" class="form-text text-danger"></div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Duration (min)</label>
+                                                        <input type="number" id="diveDuration" class="form-control" placeholder="e.g. 45" min="5" max="180">
+                                                        <div id="durationFeedback" class="form-text text-danger"></div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Water Temp (°C)</label>
+                                                        <input type="number" id="waterTemp" class="form-control" placeholder="e.g. 24" min="0" max="40">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <button class="btn btn-outline-primary prev-step">Previous</button>
+                                                    <button class="btn btn-primary next-step">Next</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Step 3: Gas Mix -->
+                                            <div id="gasStep" class="step-content d-none">
+                                                <div class="row g-3 mb-4">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Gas Mix</label>
+                                                        <select id="gasMix" class="form-select">
+                                                            <option value="air">Air (21% O2)</option>
+                                                            <option value="nitrox32">Nitrox 32</option>
+                                                            <option value="nitrox36">Nitrox 36</option>
+                                                            <option value="custom">Custom Mix</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6" id="customGasContainer" style="display: none;">
+                                                        <label class="form-label">Custom O2 %</label>
+                                                        <input type="number" id="customO2" class="form-control" placeholder="e.g. 28" min="21" max="100">
+                                                        <div id="o2Feedback" class="form-text text-danger"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <button class="btn btn-outline-primary prev-step">Previous</button>
+                                                    <button class="btn btn-primary next-step">Next</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Step 4: Objectives -->
+                                            <div id="objectivesStep" class="step-content d-none">
+                                                <div class="mb-4">
+                                                    <label class="form-label">Dive Objectives</label>
+                                                    <textarea id="diveObjectives" rows="3" class="form-control" 
+                                                        placeholder="What do you want to accomplish on this dive?"></textarea>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="form-label">Notes</label>
+                                                    <textarea id="diveNotes" rows="2" class="form-control"
+                                                        placeholder="Any special considerations or equipment needed"></textarea>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <button class="btn btn-outline-primary prev-step">Previous</button>
+                                                    <div>
+                                                        <button id="clearPlanBtn" class="btn btn-light me-2">Clear</button>
+                                                        <button id="savePlanBtn" class="btn btn-primary px-4">Save Plan</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div id="customGasContainer" class="hidden">
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Custom O2
-                                                %</label>
-                                            <input type="number" id="customO2"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 28" min="21" max="100">
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Dive
-                                            Objectives</label>
-                                        <textarea id="diveObjectives" rows="3"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="What do you want to accomplish on this dive?"></textarea>
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                                        <textarea id="diveNotes" rows="2"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Any special considerations or equipment needed"></textarea>
-                                    </div>
-
-                                    <div class="flex justify-end space-x-3">
-                                        <button id="clearPlanBtn"
-                                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                                            Clear
-                                        </button>
-                                        <button id="savePlanBtn"
-                                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                                            Save Plan
-                                        </button>
                                     </div>
                                 </div>
 
                                 <!-- Dive Safety Calculations -->
-                                <div class="bg-white rounded-xl shadow-md p-6 mt-6">
-                                    <h3 class="text-lg font-semibold text-blue-800 mb-4">Safety Calculations</h3>
+                                <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Safety Calculations</h3>
 
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div class="bg-blue-50 p-4 rounded-lg">
-                                            <div class="text-sm font-medium text-blue-700 mb-1">No Deco Time</div>
-                                            <div class="text-2xl font-bold text-blue-900" id="noDecoTime">-- min</div>
-                                            <div class="text-xs text-blue-600">At planned depth</div>
-                                        </div>
+                                            <div class="row g-4 mb-4">
+                                                <div class="col-md-4">
+                                                    <div class="p-3 bg-primary bg-opacity-10 rounded">
+                                                        <div class="small fw-medium text-primary mb-1">No Deco Time</div>
+                                                        <div class="h4 fw-bold text-dark mb-0" id="ndlTime">-- min</div>
+                                                        <div class="small text-primary">At planned depth</div>
+                                                    </div>
+                                                </div>
 
-                                        <div class="bg-green-50 p-4 rounded-lg">
-                                            <div class="text-sm font-medium text-green-700 mb-1">Surface Interval</div>
-                                            <div class="text-2xl font-bold text-green-900" id="surfaceInterval">-- hrs
+                                                <div class="col-md-4">
+                                                    <div class="p-3 bg-success bg-opacity-10 rounded">
+                                                        <div class="small fw-medium text-success mb-1">Surface Interval</div>
+                                                        <div class="h4 fw-bold text-dark mb-0" id="surfaceInterval">-- hrs</div>
+                                                        <div class="small text-success">Recommended</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <div class="p-3 bg-info bg-opacity-10 rounded">
+                                                        <div class="small fw-medium text-info mb-1">MOD</div>
+                                                        <div class="h4 fw-bold text-dark mb-0" id="modDepth">-- m</div>
+                                                        <div class="small text-info">Max Operating Depth</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="text-xs text-green-600">Recommended</div>
-                                        </div>
 
-                                        <div class="bg-purple-50 p-4 rounded-lg">
-                                            <div class="text-sm font-medium text-purple-700 mb-1">MOD</div>
-                                            <div class="text-2xl font-bold text-purple-900" id="modDepth">-- m</div>
-                                            <div class="text-xs text-purple-600">Max Operating Depth</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-4">
-                                        <div class="text-sm font-medium text-gray-700 mb-2">Safety Stop</div>
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
-                                                <i class="fas fa-stopwatch text-yellow-600"></i>
+                                            <div class="mt-4">
+                                                <div class="small fw-medium text-dark mb-2">Safety Stop</div>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-warning bg-opacity-10 p-2 me-3">
+                                                        <i class="fas fa-stopwatch text-warning"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-medium" id="safetyStop">3 min at 5m</span>
+                                                        <span class="text-muted small ms-2">(recommended)</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <span class="font-medium" id="safetyStop">3 min at 5m</span>
-                                                <span class="text-sm text-gray-500 ml-2">(recommended)</span>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="mt-6">
-                                        <div class="text-sm font-medium text-gray-700 mb-2">Dive Profile</div>
-                                        <div class="chart-container">
-                                            <canvas id="diveProfileChart"></canvas>
+                                            <div class="mt-4">
+                                                <div class="small fw-medium text-dark mb-2">Dive Profile</div>
+                                                <div class="chart-container">
+                                                    <canvas id="diveProfileChart"></canvas>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Dive Map and Saved Plans -->
-                            <div class="space-y-6">
-                                <!-- Dive Map -->
-                                <div class="bg-white rounded-xl shadow-md p-6">
-                                    <h3 class="text-lg font-semibold text-blue-800 mb-4">Dive Site Location</h3>
-                                    <div id="diveMap" class="w-full"></div>
-                                    <div class="mt-3 text-sm text-gray-500">
-                                        <i class="fas fa-info-circle text-blue-500 mr-1"></i> Click on map to mark dive
-                                        site location
+                                <!-- Dive Map and Saved Plans -->
+                                <div class="col-md-4">
+                                    <!-- Dive Map -->
+                                    <div class="card shadow-sm mb-4">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Dive Site Location</h3>
+                                            <div id="diveMap" class="w-100" style="height: 300px;"></div>
+                                            <div class="mt-3 small text-muted">
+                                                <i class="fas fa-info-circle text-primary me-1"></i>
+                                                Click on map to mark dive site location
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- Saved Dive Plans -->
-                                <div class="bg-white rounded-xl shadow-md p-6">
-                                    <h3 class="text-lg font-semibold text-blue-800 mb-4">Saved Dive Plans</h3>
-                                    <div id="savedPlansContainer"
-                                        class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
-                                        <!-- Saved plans will be loaded here -->
-                                        <div class="text-center py-4 text-gray-500" id="noPlansMessage">
-                                            <i class="fas fa-water text-2xl mb-2 text-blue-200"></i>
-                                            <p>No saved dive plans yet</p>
+                                    <!-- Saved Dive Plans -->
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Saved Dive Plans</h3>
+                                            <div id="savedPlansContainer" class="overflow-auto" style="max-height: 400px;">
+                                                <!-- Saved plans will be loaded here -->
+                                                <div class="text-center py-4 text-muted" id="noPlansMessage">
+                                                    <i class="fas fa-water fs-2 mb-2 text-primary opacity-25"></i>
+                                                    <p>No saved dive plans yet</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -336,169 +388,165 @@
                 </div>
 
                 <!-- Analysis Tab -->
-                <div id="analysis" class="tab-content">
-                    <div class="bg-white rounded-xl shadow-md p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-blue-900">Dive Analysis</h2>
-                            <div class="flex items-center space-x-3">
-                                <select id="analysisTimeframe"
-                                    class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                                    <option value="month">Last Month</option>
-                                    <option value="3months" selected>Last 3 Months</option>
-                                    <option value="6months">Last 6 Months</option>
-                                    <option value="year">Last Year</option>
-                                    <option value="all">All Time</option>
-                                </select>
-                                <button id="refreshAnalysisBtn"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                    <i class="fas fa-sync-alt mr-2"></i> Refresh
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <!-- Depth/Duration Chart -->
-                            <div class="bg-white rounded-xl shadow-md p-6">
-                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Depth vs Duration</h3>
-                                <div class="chart-container">
-                                    <canvas id="depthDurationChart"></canvas>
+                <div id="analysis" class="tab-pane fade">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="h4 fw-bold text-dark mb-0">Dive Analysis</h2>
+                                <div class="d-flex gap-3">
+                                    <select id="analysisTimeframe" class="form-select">
+                                        <option value="month">Last Month</option>
+                                        <option value="3months" selected>Last 3 Months</option>
+                                        <option value="6months">Last 6 Months</option>
+                                        <option value="year">Last Year</option>
+                                        <option value="all">All Time</option>
+                                    </select>
+                                    <button id="refreshAnalysisBtn" class="btn btn-primary d-flex align-items-center">
+                                        <i class="fas fa-sync-alt me-2"></i> Refresh
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Dive Frequency Chart -->
-                            <div class="bg-white rounded-xl shadow-md p-6">
-                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Dive Frequency</h3>
-                                <div class="chart-container">
-                                    <canvas id="diveFrequencyChart"></canvas>
+                            <div class="row g-4 mb-4">
+                                <!-- Depth/Duration Chart -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Depth vs Duration</h3>
+                                            <div class="chart-container">
+                                                <canvas id="depthDurationChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <!-- Conditions Analysis -->
-                            <div class="bg-white rounded-xl shadow-md p-6">
-                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Dive Conditions</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Average Water Temperature
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                                <i class="fas fa-temperature-low text-blue-600"></i>
+                                <!-- Dive Frequency Chart -->
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Dive Frequency</h3>
+                                            <div class="chart-container">
+                                                <canvas id="diveFrequencyChart"></canvas>
                                             </div>
-                                            <div>
-                                                <span class="text-xl font-bold" id="avgWaterTemp">-- °C</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Visibility Distribution
-                                        </div>
-                                        <div class="chart-container" style="height: 150px;">
-                                            <canvas id="visibilityChart"></canvas>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Current Conditions</div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <span
-                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Calm
-                                                65%</span>
-                                            <span
-                                                class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Moderate
-                                                25%</span>
-                                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Strong
-                                                10%</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Equipment Usage -->
-                            <div class="bg-white rounded-xl shadow-md p-6">
-                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Equipment Usage</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Most Used Configuration
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                                                <i class="fas fa-suitcase text-purple-600"></i>
-                                            </div>
-                                            <div>
-                                                <span class="font-medium" id="topConfig">Single Tank (AL80)</span>
-                                                <div class="text-xs text-gray-500">Used in 78% of dives</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="row g-4">
+                                <!-- Conditions Analysis -->
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Dive Conditions</h3>
+                                            <div class="d-flex flex-column gap-4">
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Average Water Temperature</div>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                                            <i class="fas fa-temperature-low text-primary"></i>
+                                                        </div>
+                                                        <span class="h4 mb-0" id="avgWaterTemp">-- °C</span>
+                                                    </div>
+                                                </div>
 
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Exposure Protection</div>
-                                        <div class="chart-container" style="height: 150px;">
-                                            <canvas id="exposureChart"></canvas>
-                                        </div>
-                                    </div>
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Visibility Distribution</div>
+                                                    <div style="height: 150px;">
+                                                        <canvas id="visibilityChart"></canvas>
+                                                    </div>
+                                                </div>
 
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Gas Mixes Used</div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Air
-                                                58%</span>
-                                            <span
-                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Nitrox
-                                                32 32%</span>
-                                            <span
-                                                class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">Nitrox
-                                                36 10%</span>
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Current Conditions</div>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        <span class="badge bg-success">Calm 65%</span>
+                                                        <span class="badge bg-warning">Moderate 25%</span>
+                                                        <span class="badge bg-danger">Strong 10%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Performance Metrics -->
-                            <div class="bg-white rounded-xl shadow-md p-6">
-                                <h3 class="text-lg font-semibold text-blue-800 mb-4">Performance Metrics</h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Average SAC Rate</div>
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mr-3">
-                                                <i class="fas fa-wind text-red-600"></i>
-                                            </div>
-                                            <div>
-                                                <span class="text-xl font-bold" id="avgSAC">-- L/min</span>
+                                <!-- Equipment Usage -->
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Equipment Usage</h3>
+                                            <div class="d-flex flex-column gap-4">
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Most Used Configuration</div>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                                                            <i class="fas fa-suitcase text-info"></i>
+                                                        </div>
+                                                        <div>
+                                                            <span class="fw-medium" id="topConfig">Single Tank (AL80)</span>
+                                                            <div class="small text-muted">Used in 78% of dives</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Exposure Protection</div>
+                                                    <div style="height: 150px;">
+                                                        <canvas id="exposureChart"></canvas>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Gas Mixes Used</div>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        <span class="badge bg-primary">Air 58%</span>
+                                                        <span class="badge bg-success">Nitrox 32 32%</span>
+                                                        <span class="badge bg-info">Nitrox 36 10%</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Safety Stop Compliance</div>
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                                                <i class="fas fa-check-circle text-green-600"></i>
-                                            </div>
-                                            <div>
-                                                <span class="text-xl font-bold" id="safetyCompliance">92%</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <!-- Performance Metrics -->
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h3 class="h5 fw-bold text-dark mb-4">Performance Metrics</h3>
+                                            <div class="d-flex flex-column gap-4">
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Average SAC Rate</div>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle bg-danger bg-opacity-10 p-3 me-3">
+                                                            <i class="fas fa-wind text-danger"></i>
+                                                        </div>
+                                                        <span class="h4 mb-0" id="avgSAC">-- L/min</span>
+                                                    </div>
+                                                </div>
 
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-700 mb-1">Dive Planning Accuracy</div>
-                                        <div class="flex items-center">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
-                                                <i class="fas fa-bullseye text-yellow-600"></i>
-                                            </div>
-                                            <div>
-                                                <span class="text-xl font-bold" id="planAccuracy">85%</span>
-                                                <div class="text-xs text-gray-500">±5m depth, ±10min duration</div>
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Safety Stop Compliance</div>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                                                            <i class="fas fa-check-circle text-success"></i>
+                                                        </div>
+                                                        <span class="h4 mb-0" id="safetyCompliance">92%</span>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <div class="small fw-medium text-muted mb-2">Dive Planning Accuracy</div>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                                                            <i class="fas fa-bullseye text-warning"></i>
+                                                        </div>
+                                                        <div>
+                                                            <span class="h4 mb-0" id="planAccuracy">85%</span>
+                                                            <div class="small text-muted">±5m depth, ±10min duration</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -509,155 +557,95 @@
                 </div>
 
                 <!-- Logbook Tab -->
-                <div id="logbook" class="tab-content">
-                    <div class="bg-white rounded-xl shadow-md p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-bold text-blue-900">Dive Logbook</h2>
-                            <div class="flex items-center space-x-3">
-                                <button id="newLogEntryBtn"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                                    <i class="fas fa-plus mr-2"></i> New Entry
-                                </button>
-                                <button id="exportLogbookBtn"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                                    <i class="fas fa-file-export mr-1"></i> Export
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Logbook Filters -->
-                        <div class="bg-blue-50 rounded-lg p-4 mb-6">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <!-- Date Range Filter -->
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">Date Range</label>
-                                    <select id="logbookDateRange"
-                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                        <option value="all">All Dives</option>
-                                        <option value="today">Today</option>
-                                        <option value="yesterday">Yesterday</option>
-                                        <option value="week">Last 7 Days</option>
-                                        <option value="twoweeks">Last 14 Days</option>
-                                        <option value="month">Last 30 Days</option>
-                                        <option value="3months">Last 3 Months</option>
-                                        <option value="6months">Last 6 Months</option>
-                                        <option value="year">Last Year</option>
-                                        <option value="custom">Custom Range</option>
-                                    </select>
+                <div id="logbook" class="tab-pane fade">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="h4 fw-bold text-dark mb-0">Dive Logbook</h2>
+                                <div class="d-flex gap-3">
+                                    <button id="newLogEntryBtn" class="btn btn-primary d-flex align-items-center">
+                                        <i class="fas fa-plus me-2"></i> New Entry
+                                    </button>
+                                    <button id="exportLogbookBtn" class="btn btn-secondary">
+                                        <i class="fas fa-file-export me-1"></i> Export
+                                    </button>
                                 </div>
+                            </div>
 
-                                <!-- Year/Month Filter -->
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">Year/Month</label>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <select id="logbookYearFilter"
-                                            class="border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                            <option value="all">All Years</option>
+                            <!-- Logbook Filters -->
+                            <div class="bg-light p-4 rounded mb-4">
+                                <div class="row g-4">
+                                    <!-- Date Range Filter -->
+                                    <div class="col-md-4">
+                                        <label class="form-label">Date Range</label>
+                                        <select id="logbookDateRange" class="form-select">
+                                            <option value="all">All Dives</option>
+                                            <option value="today">Today</option>
+                                            <option value="yesterday">Yesterday</option>
+                                            <option value="week">Last 7 Days</option>
+                                            <option value="twoweeks">Last 14 Days</option>
+                                            <option value="month">Last 30 Days</option>
+                                            <option value="3months">Last 3 Months</option>
+                                            <option value="6months">Last 6 Months</option>
+                                            <option value="year">Last Year</option>
+                                            <option value="custom">Custom Range</option>
                                         </select>
-                                        <select id="logbookMonthFilter"
-                                            class="border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                            <option value="all">All Months</option>
-                                            <option value="1">January</option>
-                                            <option value="2">February</option>
-                                            <option value="3">March</option>
-                                            <option value="4">April</option>
-                                            <option value="5">May</option>
-                                            <option value="6">June</option>
-                                            <option value="7">July</option>
-                                            <option value="8">August</option>
-                                            <option value="9">September</option>
-                                            <option value="10">October</option>
-                                            <option value="11">November</option>
-                                            <option value="12">December</option>
+                                    </div>
+
+                                    <!-- Year/Month Filter -->
+                                    <div class="col-md-4">
+                                        <label class="form-label">Year/Month</label>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <select id="logbookYearFilter" class="form-select">
+                                                    <option value="all">All Years</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6">
+                                                <select id="logbookMonthFilter" class="form-select">
+                                                    <option value="all">All Months</option>
+                                                    <option value="1">January</option>
+                                                    <option value="2">February</option>
+                                                    <option value="3">March</option>
+                                                    <option value="4">April</option>
+                                                    <option value="5">May</option>
+                                                    <option value="6">June</option>
+                                                    <option value="7">July</option>
+                                                    <option value="8">August</option>
+                                                    <option value="9">September</option>
+                                                    <option value="10">October</option>
+                                                    <option value="11">November</option>
+                                                    <option value="12">December</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dive Site Filter -->
+                                    <div class="col-md-4">
+                                        <label class="form-label">Dive Site</label>
+                                        <select id="logbookSiteFilter" class="form-select">
+                                            <option value="all">All Sites</option>
                                         </select>
                                     </div>
                                 </div>
 
-                                <!-- Dive Site Filter -->
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">Dive Site</label>
-                                    <select id="logbookSiteFilter"
-                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                        <option value="all">All Sites</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Custom Date Range -->
-                            <div id="customDateRange" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">From Date</label>
-                                    <input type="date" id="logbookDateFrom"
-                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">To Date</label>
-                                    <input type="date" id="logbookDateTo"
-                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
-                                </div>
-                            </div>
-
-                            <!-- Additional Filters -->
-                            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <!-- Depth Range -->
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">Depth Range (m)</label>
-                                    <div class="range-slider-container">
-                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
-                                            <span id="depthValue">0m - 60m</span>
-                                        </div>
-                                        <div class="multi-range">
-                                            <input type="range" 
-                                                id="logbookDepthMin" 
-                                                class="multi-range-slider overlap" 
-                                                min="0" 
-                                                max="60" 
-                                                step="1" 
-                                                value="0">
-                                            <input type="range" 
-                                                id="logbookDepthMax" 
-                                                class="multi-range-slider ghost" 
-                                                min="0" 
-                                                max="60" 
-                                                step="1" 
-                                                value="60">
-                                            <div class="range-track"></div>
-                                        </div>
+                                <!-- Custom Date Range -->
+                                <div id="customDateRange" class="row g-3 mt-3 d-none">
+                                    <div class="col-md-6">
+                                        <label class="form-label">From Date</label>
+                                        <input type="date" id="logbookDateFrom" class="form-control">
                                     </div>
-                                </div>
-
-                                <!-- Duration Range -->
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">Duration Range (min)</label>
-                                    <div class="range-slider-container">
-                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
-                                            <span id="durationValue">0min - 180min</span>
-                                        </div>
-                                        <div class="multi-range">
-                                            <input type="range" 
-                                                id="logbookDurationMin" 
-                                                class="multi-range-slider overlap" 
-                                                min="0" 
-                                                max="180" 
-                                                step="5" 
-                                                value="0">
-                                            <input type="range" 
-                                                id="logbookDurationMax" 
-                                                class="multi-range-slider ghost" 
-                                                min="0" 
-                                                max="180" 
-                                                step="5" 
-                                                value="180">
-                                            <div class="range-track"></div>
-                                        </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">To Date</label>
+                                        <input type="date" id="logbookDateTo" class="form-control">
                                     </div>
                                 </div>
 
                                 <!-- Gas Mix Filter -->
-                                <div>
-                                    <label class="block text-sm font-medium text-blue-700 mb-1">Gas Mix</label>
-                                    <select id="logbookGasMixFilter"
-                                        class="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white">
+                                <div class="mt-3">
+                                    <label class="form-label">Gas Mix</label>
+                                    <select id="logbookGasMixFilter" class="form-select">
                                         <option value="all">All Gas Mixes</option>
                                         <option value="air">Air</option>
                                         <option value="nitrox32">Nitrox 32</option>
@@ -665,317 +653,254 @@
                                         <option value="custom">Custom Mix</option>
                                     </select>
                                 </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button id="resetFiltersBtn" class="btn btn-light me-2">
+                                        Reset Filters
+                                    </button>
+                                    <button id="applyFiltersBtn" class="btn btn-primary">
+                                        Apply Filters
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="flex justify-end mt-4">
-                                <button id="resetFiltersBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium mr-2">
-                                    Reset Filters
-                                </button>
-                                <button id="applyFiltersBtn"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                                    Apply Filters
-                                </button>
+                            <!-- Logbook Entries -->
+                            <div id="logbookEntries" class="mb-4">
+                                <!-- Log entries will be loaded here -->
                             </div>
-                        </div>
 
-                        <!-- Logbook Entries -->
-                        <div id="logbookEntries" class="space-y-4">
-                            <!-- Log entries will be loaded here -->
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="flex justify-between items-center mt-6 pt-4 border-t">
-                            <div class="text-sm text-gray-500">
-                                Showing <span id="entriesShown">1-10</span> of <span id="totalEntries">127</span> dives
-                            </div>
-                            <div class="flex space-x-2">
-                                <button id="prevPageBtn"
-                                    class="px-3 py-1 border rounded-lg text-sm font-medium text-gray-700 bg-white disabled:opacity-50">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button id="nextPageBtn"
-                                    class="px-3 py-1 border rounded-lg text-sm font-medium text-gray-700 bg-white">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
+                            <!-- Pagination -->
+                            <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                                <div class="text-muted small">
+                                    Showing <span id="entriesShown">1-10</span> of <span id="totalEntries">127</span> dives
+                                </div>
+                                <div class="btn-group">
+                                    <button id="prevPageBtn" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button id="nextPageBtn" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tools Tab -->
-                <div id="tools" class="tab-content">
-                    <div class="bg-white rounded-xl shadow-md p-6">
-                        <h2 class="text-xl font-bold text-blue-900 mb-6">Dive Tools</h2>
+                <div id="tools" class="tab-pane fade">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h2 class="h4 fw-bold text-dark mb-4">Dive Tools</h2>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Nitrox Calculator -->
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden tool-card nitrox-calculator">
-                                <div class="bg-blue-600 px-4 py-3">
-                                    <h3 class="text-lg font-semibold text-white">Nitrox Calculator</h3>
-                                </div>
-                                <div class="p-4">
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">O2
-                                            Percentage</label>
-                                        <input type="number" id="nitroxO2"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="e.g. 32" min="21" max="100">
-                                    </div>
+                            <div class="row g-4">
+                                <!-- Nitrox Calculator -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card tool-card">
+                                        <div class="card-header bg-primary text-white">
+                                            <h3 class="h5 mb-0">Nitrox Calculator</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">O2 Percentage</label>
+                                                <input type="number" id="nitroxO2" class="form-control" placeholder="e.g. 32" min="21" max="100">
+                                            </div>
 
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Max Operating
-                                            Depth</label>
-                                        <div class="flex items-center">
-                                            <input type="number" id="modResult"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
-                                                readonly>
-                                            <span class="ml-2 text-gray-500">meters</span>
-                                        </div>
-                                    </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Max Operating Depth</label>
+                                                <div class="input-group">
+                                                    <input type="number" id="modResult" class="form-control bg-light" readonly>
+                                                    <span class="input-group-text">meters</span>
+                                                </div>
+                                            </div>
 
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Best Mix for
-                                            Depth</label>
-                                        <div class="flex">
-                                            <input type="number" id="targetDepth"
-                                                class="w-full border border-gray-300 rounded-l-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="Target depth">
-                                            <button id="calculateBestMixBtn"
-                                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg">
-                                                Calculate
-                                            </button>
-                                        </div>
-                                        <div class="mt-2 text-sm" id="bestMixResult"></div>
-                                    </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Best Mix for Depth</label>
+                                                <div class="input-group">
+                                                    <input type="number" id="targetDepth" class="form-control" placeholder="Target depth">
+                                                    <button id="calculateBestMixBtn" class="btn btn-primary">Calculate</button>
+                                                </div>
+                                                <div id="bestMixResult" class="form-text mt-2"></div>
+                                            </div>
 
-                                    <div class="bg-blue-50 p-3 rounded-lg">
-                                        <div class="text-sm font-medium text-blue-800 mb-1">Equivalent Air Depth</div>
-                                        <div class="flex items-center">
-                                            <input type="number" id="eadResult"
-                                                class="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
-                                                readonly>
-                                            <span class="ml-2 text-blue-500">meters</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- SAC Rate Calculator -->
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden tool-card">
-                                <div class="bg-green-600 px-4 py-3">
-                                    <h3 class="text-lg font-semibold text-white">SAC Rate Calculator</h3>
-                                </div>
-                                <div class="p-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Tank Size
-                                                (L)</label>
-                                            <input type="number" id="tankSize"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 12">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Start Pressure
-                                                (bar)</label>
-                                            <input type="number" id="startPressure"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 200">
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">End Pressure
-                                                (bar)</label>
-                                            <input type="number" id="endPressure"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 50">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Dive Time
-                                                (min)</label>
-                                            <input type="number" id="diveTime"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 45">
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Average Depth
-                                                (m)</label>
-                                            <input type="number" id="avgDepth"
-                                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="e.g. 15">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">SAC Rate</label>
-                                            <div class="flex items-center">
-                                                <input type="number" id="sacRate"
-                                                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
-                                                    readonly>
-                                                <span class="ml-2 text-gray-500">L/min</span>
+                                            <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                                <label class="form-label text-primary">Equivalent Air Depth</label>
+                                                <div class="input-group">
+                                                    <input type="number" id="eadResult" class="form-control bg-light" readonly>
+                                                    <span class="input-group-text">meters</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <button id="calculateSacBtn"
-                                        class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium">
-                                        Calculate SAC Rate
-                                    </button>
                                 </div>
-                            </div>
 
-                            <!-- No Deco Time Calculator -->
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden tool-card no-deco-gauge">
-                                <div class="bg-purple-600 px-4 py-3">
-                                    <h3 class="text-lg font-semibold text-white">No Deco Time Calculator</h3>
-                                </div>
-                                <div class="p-4">
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Depth (m)</label>
-                                        <input type="number" id="ndlDepth"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="e.g. 18">
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Gas Mix</label>
-                                        <select id="ndlGasMix"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="air">Air (21% O2)</option>
-                                            <option value="nitrox32">Nitrox 32</option>
-                                            <option value="nitrox36">Nitrox 36</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="bg-purple-50 p-4 rounded-lg mb-4">
-                                        <div class="text-sm font-medium text-purple-700 mb-1">No Decompression Limit
+                                <!-- SAC Rate Calculator -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card tool-card">
+                                        <div class="card-header bg-success text-white">
+                                            <h3 class="h5 mb-0">SAC Rate Calculator</h3>
                                         </div>
-                                        <div class="text-2xl font-bold text-purple-900 text-center" id="ndlTime">--
-                                            minutes</div>
-                                    </div>
+                                        <div class="card-body">
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-6">
+                                                    <label class="form-label">Tank Size (L)</label>
+                                                    <input type="number" id="tankSize" class="form-control" placeholder="e.g. 12">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">Start Pressure (bar)</label>
+                                                    <input type="number" id="startPressure" class="form-control" placeholder="e.g. 200">
+                                                </div>
+                                            </div>
 
-                                    <button id="calculateNdlBtn"
-                                        class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium">
-                                        Calculate NDL
-                                    </button>
-                                </div>
-                            </div>
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-6">
+                                                    <label class="form-label">End Pressure (bar)</label>
+                                                    <input type="number" id="endPressure" class="form-control" placeholder="e.g. 50">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">Dive Time (min)</label>
+                                                    <input type="number" id="diveTime" class="form-control" placeholder="e.g. 45">
+                                                </div>
+                                            </div>
 
-                            <!-- Safety Stop Timer -->
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden tool-card safety-stop">
-                                <div class="bg-yellow-600 px-4 py-3">
-                                    <h3 class="text-lg font-semibold text-white">Safety Stop Timer</h3>
-                                </div>
-                                <div class="p-4">
-                                    <div class="text-center mb-4">
-                                        <div class="text-5xl font-bold" id="safetyStopTimer">3:00</div>
-                                        <div class="text-sm text-gray-600">minutes remaining</div>
-                                    </div>
+                                            <div class="row g-3 mb-3">
+                                                <div class="col-6">
+                                                    <label class="form-label">Average Depth (m)</label>
+                                                    <input type="number" id="avgDepth" class="form-control" placeholder="e.g. 15">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">SAC Rate</label>
+                                                    <div class="input-group">
+                                                        <input type="number" id="sacRate" class="form-control bg-light" readonly>
+                                                        <span class="input-group-text">L/min</span>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                                    <div class="grid grid-cols-3 gap-2 mb-4">
-                                        <button id="startStopBtn"
-                                            class="bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium">
-                                            <i class="fas fa-play"></i> Start
-                                        </button>
-                                        <button id="resetStopBtn"
-                                            class="bg-gray-600 hover:bg-gray-700 text-white py-2 rounded-lg font-medium">
-                                            <i class="fas fa-redo"></i> Reset
-                                        </button>
-                                        <button id="addMinuteBtn"
-                                            class="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium">
-                                            +1 min
-                                        </button>
-                                    </div>
-
-                                    <div class="bg-yellow-50 p-3 rounded-lg">
-                                        <div class="text-sm font-medium text-yellow-800">Safety Stop Guidelines</div>
-                                        <ul class="text-xs text-yellow-700 mt-1 list-disc pl-5">
-                                            <li>Always perform a 3-5 minute stop at 5m</li>
-                                            <li>Extend stop time for deeper/longer dives</li>
-                                            <li>Monitor air supply during stop</li>
-                                        </ul>
+                                            <button id="calculateSacBtn" class="btn btn-success w-100">
+                                                Calculate SAC Rate
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Weight Calculator -->
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden tool-card">
-                                <div class="bg-red-600 px-4 py-3">
-                                    <h3 class="text-lg font-semibold text-white">Weight Calculator</h3>
+                                <!-- No Deco Time Calculator -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card tool-card">
+                                        <div class="card-header bg-info text-white">
+                                            <h3 class="h5 mb-0">No Deco Time Calculator</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Depth (m)</label>
+                                                <input type="number" id="ndlDepth" class="form-control" placeholder="e.g. 18">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Gas Mix</label>
+                                                <select id="ndlGasMix" class="form-select">
+                                                    <option value="air">Air (21% O2)</option>
+                                                    <option value="nitrox32">Nitrox 32</option>
+                                                    <option value="nitrox36">Nitrox 36</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="bg-info bg-opacity-10 p-4 rounded mb-3">
+                                                <div class="text-info fw-medium mb-1">No Decompression Limit</div>
+                                                <div class="text-center fs-3 fw-bold" id="ndlTime">-- minutes</div>
+                                            </div>
+
+                                            <button id="calculateNdlBtn" class="btn btn-info w-100 text-white">
+                                                Calculate NDL
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="p-4">
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Body Weight
-                                            (kg)</label>
-                                        <input type="number" id="bodyWeight"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="e.g. 75">
-                                    </div>
 
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Exposure
-                                            Protection</label>
-                                        <select id="exposureType"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="3mm">3mm wetsuit</option>
-                                            <option value="5mm">5mm wetsuit</option>
-                                            <option value="7mm">7mm wetsuit</option>
-                                            <option value="dry_thin">Dry suit (thin undergarment)</option>
-                                            <option value="dry_thick">Dry suit (thick undergarment)</option>
-                                        </select>
-                                    </div>
+                                <!-- Safety Stop Timer -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card tool-card">
+                                        <div class="card-header bg-warning text-white">
+                                            <h3 class="h5 mb-0">Safety Stop Timer</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-center mb-4">
+                                                <div class="display-4 fw-bold" id="safetyStopTimer">3:00</div>
+                                                <div class="text-muted">minutes remaining</div>
+                                            </div>
 
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Tank Type</label>
-                                        <select id="tankType"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="al80">Aluminum 80</option>
-                                            <option value="al100">Aluminum 100</option>
-                                            <option value="steel12">Steel 12L</option>
-                                            <option value="steel15">Steel 15L</option>
-                                        </select>
-                                    </div>
+                                            <div class="row g-2 mb-4">
+                                                <div class="col-4">
+                                                    <button id="startStopBtn" class="btn btn-success w-100">
+                                                        <i class="fas fa-play"></i> Start
+                                                    </button>
+                                                </div>
+                                                <div class="col-4">
+                                                    <button id="resetStopBtn" class="btn btn-secondary w-100">
+                                                        <i class="fas fa-redo"></i> Reset
+                                                    </button>
+                                                </div>
+                                                <div class="col-4">
+                                                    <button id="addMinuteBtn" class="btn btn-primary w-100">
+                                                        +1 min
+                                                    </button>
+                                                </div>
+                                            </div>
 
-                                    <div class="bg-red-50 p-3 rounded-lg mb-4">
-                                        <div class="text-sm font-medium text-red-700 mb-1">Recommended Weight</div>
-                                        <div class="text-2xl font-bold text-red-900 text-center" id="recommendedWeight">
-                                            -- kg</div>
+                                            <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                                <h6 class="text-warning mb-2">Safety Stop Guidelines</h6>
+                                                <ul class="text-muted small mb-0 ps-3">
+                                                    <li>Always perform a 3-5 minute stop at 5m</li>
+                                                    <li>Extend stop time for deeper/longer dives</li>
+                                                    <li>Monitor air supply during stop</li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <button id="calculateWeightBtn"
-                                        class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg font-medium">
-                                        Calculate
-                                    </button>
                                 </div>
-                            </div>
 
-                            <!-- Dive Planning Checklist -->
-                            <div class="bg-white rounded-xl shadow-md overflow-hidden tool-card">
-                                <div class="bg-indigo-600 px-4 py-3">
-                                    <h3 class="text-lg font-semibold text-white">Dive Planning Checklist</h3>
-                                </div>
-                                <div class="p-4">
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Dive Type</label>
-                                        <select id="diveType"
-                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                                            <option value="recreational">Recreational</option>
-                                            <option value="deep">Deep Dive</option>
-                                            <option value="wreck">Wreck Dive</option>
-                                            <option value="night">Night Dive</option>
-                                            <option value="drift">Drift Dive</option>
-                                        </select>
-                                    </div>
+                                <!-- Weight Calculator -->
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card tool-card">
+                                        <div class="card-header bg-danger text-white">
+                                            <h3 class="h5 mb-0">Weight Calculator</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Body Weight (kg)</label>
+                                                <input type="number" id="bodyWeight" class="form-control" placeholder="e.g. 75">
+                                            </div>
 
-                                    <div id="planningChecklist" class="space-y-2 mb-4">
-                                        <!-- Checklist items will be generated here -->
-                                    </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Exposure Protection</label>
+                                                <select id="exposureType" class="form-select">
+                                                    <option value="3mm">3mm wetsuit</option>
+                                                    <option value="5mm">5mm wetsuit</option>
+                                                    <option value="7mm">7mm wetsuit</option>
+                                                    <option value="dry_thin">Dry suit (thin undergarment)</option>
+                                                    <option value="dry_thick">Dry suit (thick undergarment)</option>
+                                                </select>
+                                            </div>
 
-                                    <div class="flex items-center text-sm text-gray-500">
-                                        <i class="fas fa-info-circle text-indigo-500 mr-2"></i>
-                                        <span>Check all items before diving</span>
+                                            <div class="mb-3">
+                                                <label class="form-label">Tank Type</label>
+                                                <select id="tankType" class="form-select">
+                                                    <option value="al80">Aluminum 80</option>
+                                                    <option value="al100">Aluminum 100</option>
+                                                    <option value="steel12">Steel 12L</option>
+                                                    <option value="steel15">Steel 15L</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="bg-danger bg-opacity-10 p-3 rounded mb-3">
+                                                <label class="form-label text-danger">Recommended Weight</label>
+                                                <div id="recommendedWeight" class="text-center fs-3 fw-bold">-- kg</div>
+                                            </div>
+
+                                            <button id="calculateWeightBtn" class="btn btn-danger w-100">
+                                                Calculate
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -988,374 +913,365 @@
 
     <!-- Modals -->
     <!-- New Category Modal -->
-    <div id="newCategoryModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-blue-900">Add New Category</h3>
-                <button onclick="closeModal('newCategoryModal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
-                <input type="text" id="categoryName"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Icon</label>
-                <select id="categoryIcon"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="suitcase">Suitcase</option>
-                    <option value="user">User</option>
-                    <option value="shield-alt">Shield</option>
-                    <option value="water">Water</option>
-                    <option value="tint">Tint</option>
-                    <option value="life-ring">Life Ring</option>
-                    <option value="weight-hanging">Weights</option>
-                    <option value="gauge">Gauge</option>
-                    <option value="mask">Mask</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
-                <select id="categoryColor"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="blue">Blue</option>
-                    <option value="purple">Purple</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="green">Green</option>
-                    <option value="red">Red</option>
-                    <option value="indigo">Indigo</option>
-                    <option value="pink">Pink</option>
-                    <option value="orange">Orange</option>
-                </select>
-            </div>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal('newCategoryModal')"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                    Cancel
-                </button>
-                <button id="saveCategoryBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                    Save Category
-                </button>
+    <div id="newCategoryModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Add New Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Category Name</label>
+                        <input type="text" id="categoryName" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon</label>
+                        <select id="categoryIcon" class="form-select">
+                            <option value="suitcase">Suitcase</option>
+                            <option value="user">User</option>
+                            <option value="shield-alt">Shield</option>
+                            <option value="water">Water</option>
+                            <option value="tint">Tint</option>
+                            <option value="life-ring">Life Ring</option>
+                            <option value="weight-hanging">Weights</option>
+                            <option value="gauge">Gauge</option>
+                            <option value="mask">Mask</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Color</label>
+                        <select id="categoryColor" class="form-select">
+                            <option value="primary">Blue</option>
+                            <option value="purple">Purple</option>
+                            <option value="warning">Yellow</option>
+                            <option value="success">Green</option>
+                            <option value="danger">Red</option>
+                            <option value="indigo">Indigo</option>
+                            <option value="pink">Pink</option>
+                            <option value="orange">Orange</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Save Category</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- New Item Modal -->
-    <div id="newItemModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-blue-900">Add New Checklist Item</h3>
-                <button onclick="closeModal('newItemModal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Item Text</label>
-                <input type="text" id="itemText"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Check regulator for leaks">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <select id="itemCategory"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                    <!-- Categories will be populated here -->
-                </select>
-            </div>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal('newItemModal')"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                    Cancel
-                </button>
-                <button id="saveItemBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                    Save Item
-                </button>
+    <div id="newItemModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Add New Checklist Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Item Text</label>
+                        <input type="text" id="itemText" class="form-control" placeholder="Check regulator for leaks">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select id="itemCategory" class="form-select">
+                            <!-- Categories will be populated here -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveItemBtn">Save Item</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Import/Export Modal -->
-    <div id="importExportModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="importExportTitle" class="text-lg font-bold text-blue-900">Import/Export Checklist</h3>
-                <button onclick="closeModal('importExportModal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div id="exportSection" class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Checklist Data</label>
-                <textarea id="checklistData" rows="8"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"></textarea>
-                <button id="copyChecklistBtn"
-                    class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    <i class="fas fa-copy mr-1"></i> Copy to Clipboard
-                </button>
-            </div>
-            <div id="importSection" class="mb-4 hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Paste Checklist Data</label>
-                <textarea id="importChecklistData" rows="8"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"></textarea>
-                <div class="mt-2 text-sm text-gray-500">
-                    Note: Importing will replace your current checklist.
+    <div id="importExportModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="importExportTitle" class="modal-title fw-bold">Import/Export Checklist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-            </div>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal('importExportModal')"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                    Cancel
-                </button>
-                <button id="confirmImportBtn"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium hidden">
-                    Import Checklist
-                </button>
+                <div class="modal-body">
+                    <div id="exportSection">
+                        <div class="mb-3">
+                            <label class="form-label">Checklist Data</label>
+                            <textarea id="checklistData" rows="8" class="form-control font-monospace"></textarea>
+                        </div>
+                        <button id="copyChecklistBtn" class="btn btn-primary">
+                            <i class="fas fa-copy me-1"></i> Copy to Clipboard
+                        </button>
+                    </div>
+                    <div id="importSection" class="d-none">
+                        <div class="mb-3">
+                            <label class="form-label">Paste Checklist Data</label>
+                            <textarea id="importChecklistData" rows="8" class="form-control font-monospace"></textarea>
+                            <div class="form-text mt-2">
+                                Note: Importing will replace your current checklist.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button id="confirmImportBtn" class="btn btn-success d-none">
+                        <i class="fas fa-check me-1"></i> Import Checklist
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Edit Item Modal -->
-    <div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-blue-900">Edit Checklist Item</h3>
-                <button onclick="closeModal('editItemModal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Item Text</label>
-                <input type="text" id="editItemText"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <select id="editItemCategory"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                    <!-- Categories will be populated here -->
-                </select>
-            </div>
-            <input type="hidden" id="editItemId">
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal('editItemModal')"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                    Cancel
-                </button>
-                <button id="updateItemBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                    Update Item
-                </button>
+    <div id="editItemModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Edit Checklist Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Item Text</label>
+                        <input type="text" id="editItemText" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select id="editItemCategory" class="form-select">
+                            <!-- Categories will be populated here -->
+                        </select>
+                    </div>
+                    <input type="hidden" id="editItemId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="updateItemBtn">Update Item</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Edit Category Modal -->
-    <div id="editCategoryModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-blue-900">Edit Category</h3>
-                <button onclick="closeModal('editCategoryModal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
-                <input type="text" id="editCategoryName"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Icon</label>
-                <select id="editCategoryIcon"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="suitcase">Suitcase</option>
-                    <option value="user">User</option>
-                    <option value="shield-alt">Shield</option>
-                    <option value="water">Water</option>
-                    <option value="tint">Tint</option>
-                    <option value="life-ring">Life Ring</option>
-                    <option value="weight-hanging">Weights</option>
-                    <option value="gauge">Gauge</option>
-                    <option value="mask">Mask</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Color</label>
-                <select id="editCategoryColor"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="blue">Blue</option>
-                    <option value="purple">Purple</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="green">Green</option>
-                    <option value="red">Red</option>
-                    <option value="indigo">Indigo</option>
-                    <option value="pink">Pink</option>
-                    <option value="orange">Orange</option>
-                </select>
-            </div>
-            <input type="hidden" id="editCategoryId">
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal('editCategoryModal')"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                    Cancel
-                </button>
-                <button id="updateCategoryBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                    Update Category
-                </button>
+    <div id="editCategoryModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Category Name</label>
+                        <input type="text" id="editCategoryName" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon</label>
+                        <select id="editCategoryIcon" class="form-select">
+                            <option value="suitcase">Suitcase</option>
+                            <option value="user">User</option>
+                            <option value="shield-alt">Shield</option>
+                            <option value="water">Water</option>
+                            <option value="tint">Tint</option>
+                            <option value="life-ring">Life Ring</option>
+                            <option value="weight-hanging">Weights</option>
+                            <option value="gauge">Gauge</option>
+                            <option value="mask">Mask</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Color</label>
+                        <select id="editCategoryColor" class="form-select">
+                            <option value="blue">Blue</option>
+                            <option value="purple">Purple</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="green">Green</option>
+                            <option value="red">Red</option>
+                            <option value="indigo">Indigo</option>
+                            <option value="pink">Pink</option>
+                            <option value="orange">Orange</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="editCategoryId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="updateCategoryBtn">Update Category</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Plan Details Modal -->
-    <div id="planDetailsModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-2xl">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-blue-900">Dive Plan Details</h3>
-                <button onclick="closeModal('planDetailsModal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+    <div id="planDetailsModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Détails du plan de plongée</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <!-- Basic Info -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary mb-3">Informations de base</h6>
+                            <div class="d-flex flex-column gap-2">
+                                <div>
+                                    <span class="text-muted small">Site de plongée:</span>
+                                    <span id="detailSite" class="fw-medium ms-2">--</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted small">Date:</span>
+                                    <span id="detailDate" class="fw-medium ms-2">--</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted small">Profondeur max:</span>
+                                    <span id="detailDepth" class="fw-medium ms-2">-- m</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted small">Durée:</span>
+                                    <span id="detailDuration" class="fw-medium ms-2">-- min</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted small">Mélange gazeux:</span>
+                                    <span id="detailGas" class="fw-medium ms-2">--</span>
+                                </div>
+                            </div>
+                        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                <div>
-                    <h4 class="font-semibold text-blue-800 mb-2">Basic Info</h4>
-                    <div class="space-y-2">
-                        <div>
-                            <span class="text-sm text-gray-500">Dive Site:</span>
-                            <span id="detailSite" class="font-medium ml-2">--</span>
+                        <!-- Safety Info -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary mb-3">Informations de sécurité</h6>
+                            <div class="d-flex flex-column gap-2">
+                                <div>
+                                    <span class="text-muted small">Temps sans déco:</span>
+                                    <span id="detailNoDeco" class="fw-medium ms-2">-- min</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted small">Intervalle de surface:</span>
+                                    <span id="detailSurface" class="fw-medium ms-2">-- hrs</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted small">Profondeur max d'utilisation:</span>
+                                    <span id="detailMod" class="fw-medium ms-2">-- m</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted small">Palier de sécurité:</span>
+                                    <span id="detailSafety" class="fw-medium ms-2">--</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-sm text-gray-500">Date:</span>
-                            <span id="detailDate" class="font-medium ml-2">--</span>
+
+                        <!-- Objectives -->
+                        <div class="col-12">
+                            <h6 class="fw-bold text-primary mb-3">Objectifs</h6>
+                            <p id="detailObjectives" class="text-muted mb-0">--</p>
                         </div>
-                        <div>
-                            <span class="text-sm text-gray-500">Max Depth:</span>
-                            <span id="detailDepth" class="font-medium ml-2">-- m</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">Duration:</span>
-                            <span id="detailDuration" class="font-medium ml-2">-- min</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">Gas Mix:</span>
-                            <span id="detailGas" class="font-medium ml-2">--</span>
+
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <h6 class="fw-bold text-primary mb-3">Notes</h6>
+                            <p id="detailNotes" class="text-muted mb-0">--</p>
                         </div>
                     </div>
                 </div>
-
-                <div>
-                    <h4 class="font-semibold text-blue-800 mb-2">Safety Info</h4>
-                    <div class="space-y-2">
-                        <div>
-                            <span class="text-sm text-gray-500">No Deco Time:</span>
-                            <span id="detailNoDeco" class="font-medium ml-2">-- min</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">Surface Interval:</span>
-                            <span id="detailSurface" class="font-medium ml-2">-- hrs</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">Max Operating Depth:</span>
-                            <span id="detailMod" class="font-medium ml-2">-- m</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-500">Safety Stop:</span>
-                            <span id="detailSafety" class="font-medium ml-2">--</span>
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" id="loadPlanBtn">
+                        <i class="fas fa-sync-alt me-2"></i> Charger le plan
+                    </button>
+                    <button type="button" class="btn btn-danger" id="deletePlanBtn">
+                        <i class="fas fa-trash-alt me-2"></i> Supprimer
+                    </button>
                 </div>
-            </div>
-
-            <div class="mb-4">
-                <h4 class="font-semibold text-blue-800 mb-2">Objectives</h4>
-                <p id="detailObjectives" class="text-gray-700">--</p>
-            </div>
-
-            <div class="mb-4">
-                <h4 class="font-semibold text-blue-800 mb-2">Notes</h4>
-                <p id="detailNotes" class="text-gray-700">--</p>
-            </div>
-
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal('planDetailsModal')"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                    Close
-                </button>
-                <button id="loadPlanBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                    Load Plan
-                </button>
-                <button id="deletePlanBtn"
-                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium">
-                    Delete Plan
-                </button>
             </div>
         </div>
     </div>
 
     <!-- Add New Logbook Entry Modal -->
-    <div id="newLogEntryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-blue-900">Add New Logbook Entry</h3>
-                <button onclick="closeModal('newLogEntryModal')" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Dive Site*</label>
-                    <input type="text" id="logEntrySite" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+    <div id="newLogEntryModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Add New Logbook Entry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Date*</label>
-                    <input type="date" id="logEntryDate" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Dive Site*</label>
+                            <input type="text" id="logEntrySite" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date*</label>
+                            <input type="date" id="logEntryDate" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Max Depth (m)*</label>
+                            <input type="number" id="logEntryDepth" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Duration (min)*</label>
+                            <input type="number" id="logEntryDuration" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Water Temp (°C)</label>
+                            <input type="number" id="logEntryTemp" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Gas Mix</label>
+                            <select id="logEntryGasMix" class="form-select">
+                                <option value="air">Air</option>
+                                <option value="nitrox32">Nitrox 32</option>
+                                <option value="nitrox36">Nitrox 36</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Conditions</label>
+                            <input type="text" id="logEntryConditions" class="form-control" placeholder="Visibility, current, etc.">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea id="logEntryNotes" rows="4" class="form-control"></textarea>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Depth (m)*</label>
-                    <input type="number" id="logEntryDepth" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveLogEntryBtn">Save Entry</button>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Duration (min)*</label>
-                    <input type="number" id="logEntryDuration" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Water Temp (°C)</label>
-                    <input type="number" id="logEntryTemp" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Gas Mix</label>
-                    <select id="logEntryGasMix" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="air">Air</option>
-                        <option value="nitrox32">Nitrox 32</option>
-                        <option value="nitrox36">Nitrox 36</option>
-                        <option value="custom">Custom</option>
-                    </select>
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Conditions</label>
-                <input type="text" id="logEntryConditions" placeholder="Visibility, current, etc." class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea id="logEntryNotes" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-            </div>
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeModal('newLogEntryModal')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium">Cancel</button>
-                <button id="saveLogEntryBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">Save Entry</button>
             </div>
         </div>
     </div>
 
-    <script src="index.js"></script>
+    <!-- Delete Item Confirmation Modal -->
+    <div id="deleteItemModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Confirmer la suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+                    <input type="hidden" id="deleteItemId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteItemBtn">
+                        <i class="fas fa-trash-alt me-2"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js" type="module"></script>
 </body>
 
 </html>
