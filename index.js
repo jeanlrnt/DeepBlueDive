@@ -218,5 +218,5 @@ function resetFilters() {
     document.getElementById('logbookSiteFilter').value = 'all';
     document.getElementById('logbookGasMixFilter').value = 'all';
     document.getElementById('customDateRange').style.display = 'none';
-    logbook.applyFilters();
+    logbook.render();
 }
